@@ -1,0 +1,118 @@
+Badly reverse engineering Incremancer's saves.
+
+Prestige Points:
+108 - A Small Investment
+      +500 blood, +50 brains, +200 bones when new level start
+102 - Blood Rate
+      +20% per level
+109 - Time Warp
+      rank:1 -> unlocked rank:0 -> locked - max 1
+110 - Master of Death
+      -1 energy cost per level - max 5 normally
+115 - Talent Point
+      Talent point for Skeleton Champion - max 120
+113 - Graveyard Health
+      +10% graveyard health per rank
+114 - Auto Shop
+      rank:1 -> unlocked rank:0 -> locked - max 1
+112 - Auto Construction
+      rank:1 -> unlocked rank:0 -> locked - max 1
+105 - Bone Rate
+      +20% per level
+104 - Brain Rate
+      +20% per level
+111 - Parts Rate
+      +20% per level
+5 - ???
+4 - ???
+3 - ???
+2 - either bloodthirst (+1 dmg) or like leather (+10 hp)
+1 - either bloodthirst (+1 dmg) or like leather (+10 hp)
+20 - ???
+21 - ???
+22 - ???
+23 - ???
+24 - ???
+40 - ???
+41 - ???
+42 - ???
+43 - ???
+44 - ???
+6 - ???
+25 - ???
+30 - ???
+9 - ???
+10 - ???
+7 - ???
+8 - ???
+26 - ???
+13 - ???
+15 - ???
+27 - ???
+11 - ???
+12 - ???
+14 - ???
+45 - ???
+46 - ???
+16 - ???
+17 - ???
+19 - ???
+29 - ???
+Constructions
+201 - Cursed Graveyard
+      rank:1 type:graveyard effect:1
+202 - Perimeter Fence
+      rank:1 type:fence effect:1
+203 - Bigger Fence
+      rank:4 type:fenceSize effect:10
+213 - Zombie Cage
+      rank:1 type:zombieCage effect:5
+205 - Crypt
+      rank:1 type:crypt effect:1
+214 - Second Zombie Cage
+      rank:1 type:zombieCage effect:10
+204 - Plague Workshop
+      rank:1 type:plagueWorkshop effect:1
+208 - Plague Spikes
+      rank:1 type:plagueSpikes effect:1
+206 - Bone Fort
+      rank:1 type:fort effect:1
+215 - Third Zombie Cage
+      rank:1 type:zombieCage effect:10
+209 - Spell Tower
+      rank:1 type:spellTower effect:1
+207 - Bone Fortress
+      rank:1 type:fortress effect:1
+216 - Fourth Zombie Cage
+      rank:1 type:zombieCage effect:10
+210 - Runesmith
+      rank:1 type:runesmith effect:1
+211 - Bone Citadel
+      rank:1 type:citadel effect:1
+217 - Fifth Zombie Cage
+      rank:1 type:zombieCage effect:15
+212 - Accursed Aviary
+      rank:1 type:aviary effect:1
+218 - Plague Laboratory
+      rank:1 type:plagueLaboratory effect:1
+219 - Part Factory
+      rank:1 type:partFactory effect:1
+220 - Creature Factory
+      rank:1 type:monsterFactory effect:1
+222 - Harpy Outfitter
+      rank:1 type:harpy effect:1
+221 - Bottomless Pit:
+      rank:10 type:pit effect:1
+Parts Generators
+  1 - Simple Machine
+      1 part per 2 sec (0.5)
+  2 - Part Duplicator
+      4 part per 3 sec (1.33)
+  3 - Stamp Press
+      16 part per 5 sec (3.2)
+  4 - Conveyor
+      64 part per 8 sec (8)
+  5 - Splitter Combiner
+      192 part per 10 sec (19.2)
+  6 - Batch Converter
+      512 part per 12 sec (42.66)
