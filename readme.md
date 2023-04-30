@@ -10,6 +10,9 @@ notepad output.json
 ./dump.py encode output.json output.sav
 ```
 
+# heres a demo
+https://user-images.githubusercontent.com/39711351/235377516-6963cf74-934e-4e8e-870a-0db6eeea0d47.mp4
+
 # requirements
 you need to install lzstring and fuckit.
 lzstring -> decompress save file and compress it
