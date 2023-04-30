@@ -1,9 +1,8 @@
 # Incremancer Save Editor
 ### i used python btw
 
-# this does not actually work right now
-<p>i dont know how to get the save editing part working.</p>
-<p>for now just use dump.py, edit it in notepad, and use dump.py again.</p>
+# this does not work well
+<p>it sorta works. to just decompress the save so you can see inside of it, use dump.py</p>
 
 ```
 ./dump.py decode input.sav output.json -b
@@ -26,6 +25,7 @@ but anyways this entire thing wouldnt be possible without incremancer existing
 
 [jamesmgittins/incremancer](https://github.com/jamesmgittins/incremancer)
 <p style='font-size: 5px'>This does not use any code from incremancer, and also the original project seems to not be licensed. Hopefully this doesnt cause problems.</p>
+and also [gkovacs/lz-string-python](https://github.com/gkovacs/lz-string-python) for the lzstring module in python.
 
 # license
 <p>licensed under gplv3 ♡</p>
