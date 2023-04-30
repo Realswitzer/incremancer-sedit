@@ -1,0 +1,30 @@
+-add editing support for levels (vipescaped,levelscompleted,trophies)
+-add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1 (assuming bloodthirst is 1))
+-add editing support for items (need further reverse engineering to figure out what the hell im doing)
+-add semicolons to run multiple edits by typing a massive line (key1 = val1; key2 = val2)
+-possibly add +=, -=, = opts for levels
+  Example of =
+  > vipEscaped = []
+
+  Example of +=
+  > !view levelsCompleted
+  [1, 2, 3, ..., 356, 357, 358]
+  > levelsCompleted += [358,...1000]
+  Key edited
+  > !view levelsCompleted
+  [1, 2, 3, ..., 998, 999, 1000]
+
+  Example of -=
+  > levelsCompleted -= [358,...1000]
+  Key edited
+  > !view levelsCompleted
+  [1, 2, 3, ..., 356, 357, 358]
+- finish reverse engineering (id)
+- maybe preset-esque things? like "
+    > !preset maxresources
+    Keys edited
+  "
+  and in maxresources.(whatever extension is used):
+    blood = null; brains = null; bones = null; parts = null; bonesTotal = null)
+  i guess?
+- suggest similar named keys (i.e. typing bonws will suggest bones)

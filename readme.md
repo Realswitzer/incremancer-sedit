@@ -12,9 +12,13 @@ notepad output.json
 ```
 
 # requirements
-the only thing you actually need to install is the lzstring library.
+you need to install lzstring and fuckit.
+lzstring -> decompress save file and compress it
+fuckit -> try/except didnt work for eval and exec so...yeah.
+pyperclip -> not used in final thing but used for debugging. i left the code in because im lazy so until the "final" release is made itll be listed.
 ```
 pip install lzstring
+pip install fuckit
 ```
 
 ### idk what to name this section
