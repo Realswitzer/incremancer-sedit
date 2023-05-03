@@ -15,12 +15,14 @@ https://user-images.githubusercontent.com/39711351/235377516-6963cf74-934e-4e8e-
 
 # requirements
 you need to install lzstring and fuckit.
-lzstring -> decompress save file and compress it
-fuckit -> try/except didnt work for eval and exec so...yeah.
-pyperclip -> not used in final thing but used for debugging. i left the code in because im lazy so until the "final" release is made itll be listed.
+<p>lzstring -> decompress save file and compress it</p>
+<p>fuckit -> try/except didnt work for eval and exec so...yeah.</p>
+<p>numpy -> idk handle [x,...,y]</p>
+<p>pyperclip -> not used in final thing but used for debugging. i left the code in because im lazy so until the "final" release is made itll be listed.</p>
 ```
 pip install lzstring
 pip install fuckit
+pip install numpy
 ```
 
 ### idk what to name this section

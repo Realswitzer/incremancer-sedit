@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 
 # pretend that theres a link to the license file. im too lazy.
+# you will NOT import the entire python base installation modules
 import argparse
 import json
 import os
 import time
+import re
 # import code
 
 import fuckit  # this is bad practice.
 import lzstring
+import numpy
 
 # SHIPPING: REMOVE THIS
 # import pyperclip
@@ -50,7 +53,7 @@ if troll[0] == "{":
 elif troll[0] == "N":
     data = LZString.decompressFromEncodedURIComponent(troll)
     format = "sav"
-#otherwise its in some format that i refuse to work with.
+# otherwise its in some format that i refuse to work with.
 else:
     print("hey i think ur file sort of brokey.")
     exit()
@@ -87,8 +90,9 @@ if str(cmdprefix) == '' or cmdprefix == ['']:
     print("cmdprefix variable is screwed up, using emergency prefix '!'")
     cmdprefix = '!'
 
-# save and exit, deleting temp.tmp. much more graceful than ctrl+c.
+
 def cmdexit(shouldsave=True):
+    # save and exit, deleting temp.tmp. much more graceful than ctrl+c.
     # uh this doesnt work it literally just saves anyways. sorry.
     if shouldsave:
         # just call the save command real quick
@@ -97,8 +101,9 @@ def cmdexit(shouldsave=True):
     os.remove("temp.tmp")
     exit()
 
-# the actual save part
+
 def cmdsave():
+    # the actual save part
     # now jsondata needs to be accessible in this function
     global jsondata
     # pretty much just open the files to write to
@@ -114,6 +119,7 @@ def cmdsave():
     file.write(LZString.compressToEncodedURIComponent(vvv))
     file.close()
     tempfile.close()
+
 
 # honestly none of this even does anything.
 currmenu = "term"
@@ -145,9 +151,10 @@ def cmdmenu(menu="main"):
     # else:
     #     print("Menu not found")
 
-# now this would make sense if the above function worked.
-# it doesn't.
+
 def cmdprev():
+    # now this would make sense if the above function worked.
+    # it doesn't.
     # get the current menu
     global currmenu
     # more debug code.
@@ -185,23 +192,40 @@ def cmdhelp():
         x += 1
 
 
-# view key values. this is an actually useful command.
 def cmdview(x):
-    # if just in the base layer, whatever the real name is, print
-    if x in jsonkeys:
-        print(jsondata[x])
+    # view key values. this is an actually useful command.
     # print name of every key in base
-    elif x == "@all":
+    if x == "@all":
         print(jsonkeys)
-    # print everything in skeleton key
-    elif x == "@skeleton":
-        print(list(jsondata['skeleton']))
-    # check for skeleton prefix. this is hardcoded and will not show nested vars
-    elif x[:9] == "skeleton.":
-        print(jsondata['skeleton'][x[9:]])
+    elif x == '':
+        print("invalid syntax")
     else:
-        # just use !help goofball.
-        print("invalid syntax <view [key]>")
+        # print everything in skeleton key
+        zzzparts = x.split('.')
+        # make/clear incrementing variable
+        inc = 0
+        # assign blank string
+        zzy = ""
+        # if x = 'skeleton.xpRate';
+        # zzzparts = ['skeleton','xpRate'];
+        # zzy = "['skeleton']['xpRate']"
+        # now just increment through to get a large string.
+        while inc < len(zzzparts):
+            try:
+                zzzpart = int(zzzparts[inc])
+            except:
+                zzzpart = str(zzzparts[inc])
+            zzy = zzy + str([zzzpart])
+            inc += 1
+        # try to edit variable if it exists. just using tryexcept to lazily
+        # catch errors and stop the program from exiting unexpectedly
+        try:
+            # use exec because i dont know any workarounds.
+            exec('print(jsondata' + zzy + ')')
+        # if anything happens during this,
+        except:
+            print("something went wrong, probably misinput\nsowwy :3")
+
 
 # to gatekeep using eval and exec, even though from the user perspective
 # they basically do nothing of value, just have them type a long ass phrase
@@ -211,8 +235,8 @@ evalagree = False
 # evalphrase = "This is a terrible practice and should not be used in the slightest" # SHIPPING: Make sure this line is not commented out.
 evalphrase = "ok trust me bro"
 
-# ooh spooky bad practice
-@fuckit
+
+@fuckit  # ooh spooky bad practice
 # now just throw input in eval command. got it? good.
 def cmdeval(x):
     global evalagree
@@ -243,8 +267,9 @@ def cmdexec(x):
 # def cmdinteractiveinterpreter():
 #     code.InteractiveInterpreter(locals=locals())
 
-# check command input.
+
 def cmdCheck(cmdinput):
+    # check command input.
     # insert some code that checks the command i guess
     # make this more efficient pls
     # try to split the command if it's not just one word.
@@ -321,12 +346,15 @@ def cmdCheck(cmdinput):
     else:
         print("Editor command not found.")
 
+
 # prints different help, may make SETTINGS that will turn this off for people
 # used to the weird way of save editing via cli
 print(
-    "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'")
-# parses the input
+    "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]")
+
+
 def parseCmd(cmd):
+    # parses the input
     # check if it seems to be an editor command
     if cmd[0] in cmdprefix:
         cmdCheck(cmd[1:])
@@ -339,10 +367,36 @@ def parseCmd(cmd):
             # editval - value to be assigned
 
             editkey = cmd.split(' = ', 1)[0]
-            editval = cmd.split(' = ', 1)[1]
+            editval = cmd.split(' = ', 1)[1].strip()
         # if we realize splitting atoms is just stupid,
         except:
             print("editval not found")
+        # now we check if its a list
+        if re.search(r"\[\d*,...,\d*\]", editval) or re.search(r"\[\d*,...,\d*,\d*\]", editval):
+            # just to not deal with the brackets, cut them off.
+            chucklenuts = editval[1:-1].split(',')
+            if len(chucklenuts) == 3:
+                # [x,...,y]
+                # step is implied
+                rangestep = 1
+                # x = min
+                rangemin = int(chucklenuts[0])
+                # y = max
+                rangemax = int(chucklenuts[2])
+            elif len(chucklenuts) == 4:
+                # [x,...,y,z]
+                # z = step
+                rangestep = int(chucklenuts[3])
+                # x = min
+                rangemin = int(chucklenuts[0])
+                # y = max
+                rangemax = int(chucklenuts[2])
+            else:
+                # dont know how this would get triggered but if something really bad happens...
+                print("probably did something wrong because it no workey. :3c")
+            # not turn everything into a fun list!
+            editval = numpy.arange(
+                rangemin, rangemax + rangestep, rangestep).tolist()
         # for accessing nested variables we split it inefficiently
         zzzparts = editkey.split('.')
         # make/clear incrementing variable
@@ -354,18 +408,23 @@ def parseCmd(cmd):
         # zzy = "['skeleton']['xpRate']"
         # now just increment through to get a large string.
         while inc < len(zzzparts):
-            zzy = zzy + str([zzzparts[inc]])
+            try:
+                zzzpart = int(zzzparts[inc])
+            except:
+                zzzpart = str(zzzparts[inc])
+            zzy = zzy + str([zzzpart])
             inc += 1
         # try to edit variable if it exists. just using tryexcept to lazily
         # catch errors and stop the program from exiting unexpectedly
-        try:
+        # try:
             # use exec because i dont know any workarounds.
-            exec('jsondata' + zzy + ' = editval')
-            # show edited keys, esp. for concatenated commands.
-            print("Key edited / ("+ zzy + ") ->", editval)
+        exec('jsondata' + zzy + ' = editval')
+        # show edited keys, esp. for concatenated commands.
+        print("Key edited / (" + zzy + ") -> \"" + str(editval) + "\"")
         # if anything happens during this,
-        except:
-            print("something went wrong, probably misinput\nsowwy :3")
+        # except:
+        #    print("something went wrong, probably misinput\nsowwy :3")
+
 
 # create infinite terminal.
 while True:

@@ -1,7 +1,6 @@
 -add editing support for levels (vipescaped,levelscompleted,trophies)
 -add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1 (assuming bloodthirst is 1))
 -add editing support for items (need further reverse engineering to figure out what the hell im doing)
--add semicolons to run multiple edits by typing a massive line (key1 = val1; key2 = val2)
 -possibly add +=, -=, = opts for levels
   Example of =
   > vipEscaped = []
