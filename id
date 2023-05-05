@@ -1,63 +1,59 @@
 Badly reverse engineering Incremancer's saves.
 
-Prestige Points:
-108 - A Small Investment
-      +500 blood, +50 brains, +200 bones when new level start
-102 - Blood Rate
-      +20% per level
-109 - Time Warp
-      rank:1 -> unlocked rank:0 -> locked - max 1
-110 - Master of Death
-      -1 energy cost per level - max 5 normally
-115 - Talent Point
-      Talent point for Skeleton Champion - max 120
-113 - Graveyard Health
-      +10% graveyard health per rank
-114 - Auto Shop
-      rank:1 -> unlocked rank:0 -> locked - max 1
-112 - Auto Construction
-      rank:1 -> unlocked rank:0 -> locked - max 1
-105 - Bone Rate
-      +20% per level
-104 - Brain Rate
-      +20% per level
-111 - Parts Rate
-      +20% per level
-5 - ???
-4 - ???
-3 - ???
-2 - either bloodthirst (+1 dmg) or like leather (+10 hp)
-1 - either bloodthirst (+1 dmg) or like leather (+10 hp)
-20 - ???
-21 - ???
-22 - ???
-23 - ???
-24 - ???
-40 - ???
-41 - ???
-42 - ???
-43 - ???
-44 - ???
-6 - ???
-25 - ???
-30 - ???
-9 - ???
-10 - ???
-7 - ???
-8 - ???
-26 - ???
-13 - ???
-15 - ???
-27 - ???
-11 - ???
-12 - ???
-14 - ???
-45 - ???
-46 - ???
-16 - ???
-17 - ???
-19 - ???
-29 - ???
+108 - A Small Investment (+500 blood, +50 brains, +200 bones when new level start)
+102 - Blood Rate (+20% per level)
+109 - Time Warp (Unlock Time Warp spell, cap 1)
+110 - Master of Death (-1 energy cost, cap 5 normally)
+115 - Talent Point (Skeleton Talent Point, cap 120)
+113 - Graveyard Health (+10% graveyard health)
+114 - Auto Shop (Unlock Auto Shop, cap 1)
+112 - Auto Construction (Unlock Auto Construction, cap 1)
+105 - Bone Rate (+20% per level)
+104 - Brain Rate (+20% per level)
+111 - Parts Rate (+20% per level)
+5 - Your Soul is Mine! (+10% chance humans turn to zombies, cap 10)
+4 - Recycling is Cool (+10% chance to get brain on zombie death, cap 10)
+3 - Cold Storage (+50 brain capacity, cap 20)
+2 - Like Leather (+10 hp, cap 40)
+1 - Bloodthirst (+1 dmg, cap 40)
+20 - Energy Rush (Unlock Energy Rush Spell, cap 1)
+21 - Master Summoner (+5 energy cap, cap 20)
+22 - Primal Reflexes (+1 zombie speed, cap 20)
+23 - Blood Harvest (+10% max blood)
+24 - Unholy Construction (unlock construction, cap 1)
+40 - Bone Throne (+10 max energy, cap 15)
+41 - Crown of Bones (+0.2 energy per second, cap 25)
+42 - Bonebarrows (+5 bone collector capacity, cap 20)
+43 - Bone Reinforced Tanks (+2000 blood storage)
+44 - Brain Cage (+500 brain storage)
+6 - Infected Bite (+10% chance for DoT on bite, cap 10)
+25 - Infected Corpse (+10% explosion chance on death, cap 10)
+30 - Improved Spikes (-20% plague spike delay, cap 4)
+9 - Sharpened Teeth (+3 dmg, cap 50)
+10 - Thick Skull (+25 hp, cap 50)
+7 - Detonate (Unlock Detonate spell, cap 1)
+8 - Gigazombies? (Unlock Gigazombies spell, cap 1)
+26 - Energy Charge (Learn Energy Charge spell, cap 1)
+13 - Blazing Speed (+5% movement/attack speed on burning zombies)
+15 - Runic Syphon (+1% rune income)
+27 - What Doesn't Kill You (+10% Explosion healing, cap 20)
+11 - Razor Claws (+5 dmg)
+12 - Battle Hardened (+40 hp)
+14 - Spit it Out (Rank 1: spit plague projectiles, 50% damage + DoT, range increases [by how much?])
+45 - Earth Freeze (Learn Earth Freeze spell, cap 1)
+46 - Plague Armor (-2% damage from infected humans, cap 10)
+16 - Killer Instinct (+8 dmg)
+17 - Tough as Nails (+100 hp)
+19 - Faster Harpies (+2 harpy speed, cap 20)
+29 - Tank Buster (Harpy fire bombs during boss stages, cap 1)
+48 - Bombs Away (Harpy carry +1 bomb, cap 3)
+28 - One is Never Enough (+1 Creature limit, cap 15)
+60 - Extra Limbs (+2% golem damage)
+61 - Big Boned (+2% golem health)
+47 - Bulletproof (+5% earth golem reflect, cap 5)
+101 - Blood Storage (+20% blood storage)
+103 - Brain Storage (+20% brain storage)
+
 Constructions
 201 - Cursed Graveyard
       rank:1 type:graveyard effect:1
@@ -118,11 +114,37 @@ Parts Generators
       512 part per 12 sec (42.66)
 
 Items
-  id - ?
+  id - maybe random unique numbers?
   l  - level
-  s  - 
+  s  - item type
+      1: helmet
+      2: chest
+      3: legs
+      4: gloves
+      5: boots
+      6: sword
+      7: shield
   r  - rarity
-  p  -
-  e  -
-  se -
-  q  -
+      1: common
+      2: rare
+      3: epic
+      4: legendary
+  p  - prefix
+      common:     ["Wooden", "Sturdy", "Rigid", "Iron", "Rusty", "Flimsy", "Battered", "Damaged", "Used", "Stained", "Training"],
+      rare:       ["Steel", "Shiny", "Polished", "Forged", "Plated", "Bronze", "Reinforced", "Veteran's", "Reliable"],
+      epic:       ["Antique", "Ancient", "Famous", "Bejeweled", "Notorious", "Historic", "Mythical", "Extraordinary"],
+      legendary:  ["Monstrous", "Diabolical", "Withering", "Terrible", "Demoniacal"]
+  e  - stats
+      1: -1 respawntime
+      2: +1 skeletonspeed
+      3: +24(l) health
+      4: +3(l) dmg
+      5: +1 zombiespeed
+  se - "special effects", cast spell on attack
+      1: time warp
+      2: energy charge
+      3: detonate
+      4: earth freeze
+      5: gigazombies
+      6: incinerate
+  q  - equipped

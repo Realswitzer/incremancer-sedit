@@ -1,4 +1,3 @@
--add editing support for levels (vipescaped,levelscompleted,trophies)
 -add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1 (assuming bloodthirst is 1))
 -add editing support for items (need further reverse engineering to figure out what the hell im doing)
 -possibly add +=, -=, = opts for levels
