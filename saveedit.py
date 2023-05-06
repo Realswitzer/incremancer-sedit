@@ -5,8 +5,8 @@
 import argparse
 import json
 import os
-import time
 import re
+import operator
 # import code
 
 import fuckit  # this is bad practice.
@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="save file")
 parser.add_argument("-o", "--output", type=str, help="output file")
 parser.add_argument("-c", "--overwrite", action='store_true',
-                    help="confirm overwrite")
+                    help="confirm overwrite") # not used, need to implement.
 args = parser.parse_args()
 
 # look for temp file and determine input file
@@ -80,6 +80,9 @@ del format
 # also doesn't this not even get used when checking if a key exists?"
 # well, yes. i should replace it but this is not made to be efficient.
 jsonkeys = list(jsondata)
+
+# sort by id, should figure out better way of doing this.
+jsondata['upgrades'].sort(key=operator.itemgetter('id'))
 
 # terminal stuff
 # possibly make longer prefixes?
@@ -170,6 +173,139 @@ def cmdprev():
     elif currmenu in ['items_skel', 'talents_skel', 'stats_skel']:
         cmdmenu('skeleton')
 
+def cmdupgrades(x):
+    x = x.rpartition(' ')
+    skip = False
+    # finally use switch statements.
+    # need to fix x[2] = 1 in case user is trying to lock it
+    # should determine if 1 or greater, x[2]=1 else x[2]=0 and convert to function
+    match re.compile('[^a-zA-Z ]').sub('', x[0].lower()):
+        case "bloodthirst":
+            listelement = 0
+        case "like leather":
+            listelement = 1
+        case "cold storage":
+            listelement = 2
+        case "recycling is cool":
+            listelement = 3
+        case "your soul is mine":
+            listelement = 4
+        case "infected bite":
+            listelement = 5
+        case "detonate":
+            listelement = 6
+            # this can only be on or off, no point in having level 1000
+            x[2] = 1
+        case "gigazombies":
+            listelement = 7
+            x[2] = 1
+        case "sharpened teeth":
+            listelement = 8
+        case "thick skull":
+            listelement = 9
+        case "razor claws":
+            listelement = 10
+        case "battle hardened":
+            listelement = 11
+        case "blazing speed":
+            listelement = 12
+        case "spit it out":
+            listelement = 13
+        case "runic syphon":
+            listelement = 14
+        case "killer instinct":
+            listelement = 15
+        case "tough as nails":
+            listelement = 16
+        case "faster harpies":
+            listelement = 17
+        case "energy rush":
+            listelement = 18
+            x[2] = 1
+        case "master summoner":
+            listelement = 19
+        case "primal reflexes":
+            listelement = 20
+        case "blood harvest":
+            listelement = 21
+        case "unholy construction":
+            listelement = 22
+            x[2] = 1
+        case "infected corpse":
+            listelement = 23
+        case "energy charge":
+            listelement = 24
+            x[2] = 1
+        case "what doesnt kill you":
+            listelement = 25
+        case "one is never enough":
+            listelement = 26
+        case "tank buster":
+            listelement = 27
+            x[2] = 1
+        case "improved spikes":
+            listelement = 28
+        case "bone throne":
+            listelement = 29
+        case "crown of bones":
+            listelement = 30
+        case "bonebarrows":
+            listelement = 31
+        case "bone reinforced tanks":
+            listelement = 32
+        case "brain cage":
+            listelement = 33
+        case "earth freeze":
+            listelement = 34
+            x[2] = 1
+        case "plague armor":
+            listelement = 35
+        case "bulletproof":
+            listelement = 36
+        case "bombs away":
+            listelement = 37
+        case "extra limbs":
+            listelement = 38
+        case "big boned":
+            listelement = 39
+        case "blood storage":
+            listelement = 40
+        case "blood rate":
+            listelement = 41
+        case "brain storage":
+            listelement = 42
+        case "brain rate":
+            listelement = 43
+        case "bone rate":
+            listelement = 44
+        case "a small investment":
+            listelement = 45
+        case "time warp":
+            listelement = 46
+            x[2] = 1
+        case "master of death":
+            listelement = 47
+        case "parts rate":
+            listelement = 48
+        case "auto construction":
+            listelement = 49
+            x[2] = 1
+        case "graveyard health":
+            listelement = 50
+        case "auto shop":
+            listelement = 51
+            x[2] = 1
+        case "talent point":
+            listelement = 52
+        case _:
+            skip = True
+    if not skip == True:
+        listelement = "[" + str(listelement) + "]"
+        exec('jsondata["upgrades"]' + listelement + '[\"rank\"] = x[2]', globals(), locals())
+        # show edited keys, esp. for concatenated commands.
+        print("Key edited / ([\"upgrades\"]" + str(listelement) + "[\"rank\"]) -> \"" + str(x[2]) + "\"")
+    else:
+        print("skipped")
 
 def cmdhelp():
     # create incrementing variable
@@ -182,9 +318,12 @@ def cmdhelp():
     # now this does require manual updating, is outdated, and if you get
     # anything in the wrong order then all of the help texts for each cmd
     # is out of order.
-    cmds = ["help", "exit", "save", "saveas", "menu", "view", "eval", "exec"]
+    cmds = ["help", "exit", "save", "saveas", "menu", "view", "dedupe", "upgrades", "clear", "eval", "exec"]
     cmdshelps = ["Prints list of editor commands", "Exits save editor",
-                 "Saves file", "Saves file as new file, changes output", "Opens different menus", "View value of key (@all shows all keys) <key,@all,key.nestkey>", "Arbitrary code execution - evaluate expressions", "Arbitrary code execution - execute code. but with exec()"]
+                 "Saves file", "Saves file as new file, changes output", "Opens different menus",
+                 "View value of key (@all shows all keys) <key,@all,key.nestkey>", "Deduplicate lists",
+                 "Edit upgrade values by name", "clears screen", "Arbitrary code execution - evaluate expressions",
+                 "Arbitrary code execution - execute code. but with exec()"]
     # now we just increment through everything and print the help message! easy!
     while x < len(cmds):
         print(str(cmdprefix[0]) + cmds[x] + " - " + cmdshelps[x])
@@ -354,7 +493,12 @@ def cmdCheck(cmdinput):
     # deduplicate lists
     elif cmd == "dedupe" or cmd == "deduplicate":
         cmddedupe(rest)
+    # open upgrades menu
+    elif cmd == "upgrades" or cmd == "upgrade" or cmd == "upg":
+        cmdupgrades(rest)
     # other
+    elif cmd == "cls" or cmd == "clear":
+        os.system('cls' if os.name == "nt" else 'clear')
     elif cmd == ":3":
         # :3
         print('''
@@ -480,6 +624,7 @@ def parseCmd(cmd):
                         editval = int(editval)
                     except:
                         pass
+                    whatdoinamethis = int
                     if isinstance(editval, int):
                         exec('whatdoinamethis = int(jsondata' + zzy + ')',
                              globals(), globals())

@@ -1,7 +1,7 @@
--add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1)
--add editing support for items (need further reverse engineering to figure out what the hell im doing)
--possibly add +=, -=, = opts
--clear/cls command to make screen prettier
+- add editing support for items (need further reverse engineering to figure out what the hell im doing)
+- construction support
+- possibly add +=, -=, = opts
+- clear/cls command to make screen prettier
   get -= working with lists. cant find any methods.
 - maybe preset-esque things? like "
     > !preset maxresources
@@ -21,3 +21,11 @@
   Deduped ['trophies']
   ['[', '0', ',', '5', '1', '2', ']']
   >
+- make -c/--overwrite arg do something
+- check if output file already exists to prevent issues.
+- make better garbage collection? if possible?
+- convert to switch statements
+- remove useless commands
+- maybe edit by id
+- make it conform to pep8 i guess.
+- remake /:3
