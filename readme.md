@@ -2,6 +2,8 @@
 
 ### i used python btw
 
+<p>oh yeah i also made one of the worst code samples. feel free to use as an example of flat out terrible code.</p>
+
 # this does not work well
 
 <p>it sorta works. to just decompress the save so you can see inside of it, use dump.py</p>

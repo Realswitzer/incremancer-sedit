@@ -1,5 +1,6 @@
 # i don't want save files in commits.
 *.sav
 *.json
+temp.tmp
 # term.py was used as a way to modify at least the terminal-like part of saveedit.py with online environments. lzstring not supported on those. will not elaborate.
 term.py

@@ -1,23 +1,8 @@
--add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1 (assuming bloodthirst is 1))
+-add editing support for upgrades (likely by way of mapping, i.e. "Bloodthirst" maps to id 1)
 -add editing support for items (need further reverse engineering to figure out what the hell im doing)
--possibly add +=, -=, = opts for levels
-  Example of =
-  > vipEscaped = []
-
-  Example of +=
-  > !view levelsCompleted
-  [1, 2, 3, ..., 356, 357, 358]
-  > levelsCompleted += [358,...1000]
-  Key edited
-  > !view levelsCompleted
-  [1, 2, 3, ..., 998, 999, 1000]
-
-  Example of -=
-  > levelsCompleted -= [358,...1000]
-  Key edited
-  > !view levelsCompleted
-  [1, 2, 3, ..., 356, 357, 358]
-- finish reverse engineering (id)
+-possibly add +=, -=, = opts
+-clear/cls command to make screen prettier
+  get -= working with lists. cant find any methods.
 - maybe preset-esque things? like "
     > !preset maxresources
     Keys edited
@@ -26,3 +11,13 @@
     blood = null; brains = null; bones = null; parts = null; bonesTotal = null)
   i guess?
 - suggest similar named keys (i.e. typing bonws will suggest bones)
+- optimize this. sorry sov :(
+- figure out how to reduce the amount of if statements
+- dedupe: fix manual list insertion
+  > !view trophies;trophies = [0,5,10,15,20];/dedupe trophies
+  Running concatenated cmd
+  [10, 100, 105, 110, 115, 120, 125, 130, 135, ...]
+  Key edited / (['trophies']) -> "[0,5,10,15,20]"
+  Deduped ['trophies']
+  ['[', '0', ',', '5', '1', '2', ']']
+  >

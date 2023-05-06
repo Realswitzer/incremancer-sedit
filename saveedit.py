@@ -38,7 +38,6 @@ if os.path.exists('temp.tmp'):
 else:
     inputfile = args.file
 
-
 # determine file format
 v = open(inputfile)
 troll = v.read()
@@ -185,7 +184,7 @@ def cmdhelp():
     # is out of order.
     cmds = ["help", "exit", "save", "saveas", "menu", "view", "eval", "exec"]
     cmdshelps = ["Prints list of editor commands", "Exits save editor",
-                 "Saves file", "Saves file as new file, changes output", "Opens different menus", "View value of key (@all shows all keys) <key,@all,@skeleton,skeleton.key>", "Arbitrary code execution - evaluate expressions", "Arbitrary code execution - execute code. but with exec()"]
+                 "Saves file", "Saves file as new file, changes output", "Opens different menus", "View value of key (@all shows all keys) <key,@all,key.nestkey>", "Arbitrary code execution - evaluate expressions", "Arbitrary code execution - execute code. but with exec()"]
     # now we just increment through everything and print the help message! easy!
     while x < len(cmds):
         print(str(cmdprefix[0]) + cmds[x] + " - " + cmdshelps[x])
@@ -200,7 +199,6 @@ def cmdview(x):
     elif x == '':
         print("invalid syntax")
     else:
-        # print everything in skeleton key
         zzzparts = x.split('.')
         # make/clear incrementing variable
         inc = 0
@@ -212,8 +210,10 @@ def cmdview(x):
         # now just increment through to get a large string.
         while inc < len(zzzparts):
             try:
+                # handle editing json list elements.
                 zzzpart = int(zzzparts[inc])
             except:
+                # if its not an integer, its a string.
                 zzzpart = str(zzzparts[inc])
             zzy = zzy + str([zzzpart])
             inc += 1
@@ -231,6 +231,8 @@ def cmdview(x):
 # they basically do nothing of value, just have them type a long ass phrase
 # every time they start the program!
 # hell, this is so secure you can't even set variables. debugging this was ass.
+# may turn this into a settings file so you dont have to type
+# 'ok trust me bro' every single time.
 evalagree = False
 # evalphrase = "This is a terrible practice and should not be used in the slightest" # SHIPPING: Make sure this line is not commented out.
 evalphrase = "ok trust me bro"
@@ -245,12 +247,13 @@ def cmdeval(x):
         if input("The eval command is a dangerous command, it is literally just arbitrary code execution. By typing '" + evalphrase + "', you will be able to execute arbitrary code. This is dangerous and not recommended. ") == evalphrase:
             evalagree = True
     if evalagree:
-        eval(x)
+        eval(x, globals(), globals())
 
 
 # wait this does basically the same thing but with exec.
-# why? i thought (after reading on stackoverflow) exec could set variables
-# turns out in this program it's so terrible you can't even do that easily.
+# now i know if you look at previous versions,
+# i had comments saying you couldn't set variables.
+# turns out i was wrong. just needed to pass globals.
 @fuckit
 def cmdexec(x):
     global evalagree
@@ -259,13 +262,36 @@ def cmdexec(x):
         if input("The exec command is a dangerous command, it is literally just arbitrary code execution. By typing '" + evalphrase + "', you will be able to execute arbitrary code. This is dangerous and not recommended. ") == evalphrase:
             evalagree = True
     if evalagree:
-        exec(x)
+        exec(x, globals(), globals())
 
 # now this was going to just throw people into an interactive shell, like if
 # you typed 'python3'. that didn't work.
 # @fuckit
 # def cmdinteractiveinterpreter():
 #     code.InteractiveInterpreter(locals=locals())
+
+
+def cmddedupe(x):
+    zzzparts = x.split('.')
+    # make/clear incrementing variable
+    inc = 0
+    # assign blank string
+    zzy = ""
+    # if editkey = 'skeleton.xpRate';
+    # zzzparts = ['skeleton','xpRate'];
+    # zzy = "['skeleton']['xpRate']"
+    # now just increment through to get a large string.
+    while inc < len(zzzparts):
+        try:
+            zzzpart = int(zzzparts[inc])
+        except:
+            zzzpart = str(zzzparts[inc])
+        zzy = zzy + str([zzzpart])
+        inc += 1
+    exec("zz = list(dict.fromkeys(jsondata" + zzy + "))", globals(), globals())
+    exec('jsondata' + zzy + ' = zz')
+    print("Deduped " + str(zzy))
+    cmdview(x)
 
 
 def cmdCheck(cmdinput):
@@ -325,6 +351,9 @@ def cmdCheck(cmdinput):
     # prints help
     elif cmd == "help" or cmd == "?":
         cmdhelp()
+    # deduplicate lists
+    elif cmd == "dedupe" or cmd == "deduplicate":
+        cmddedupe(rest)
     # other
     elif cmd == ":3":
         # :3
@@ -365,73 +394,144 @@ def parseCmd(cmd):
             # split at equal sign
             # editkey - key to be edited
             # editval - value to be assigned
-
-            editkey = cmd.split(' = ', 1)[0]
-            editval = cmd.split(' = ', 1)[1].strip()
+            # should figure out more efficient method to do all of this.
+            if ' = ' in cmd:
+                editkey = cmd.split(' = ', 1)[0]
+                editval = cmd.split(' = ', 1)[1].strip()
+                # determine mode
+                mode = 'set'
+                # stop this from erroring.
+                skip = False
+            elif ' += ' in cmd:
+                editkey = cmd.split(' += ', 1)[0]
+                editval = cmd.split(' += ', 1)[1].strip()
+                mode = 'add'
+                skip = False
+            elif ' -= ' in cmd:
+                editkey = cmd.split(' -= ', 1)[0]
+                editval = cmd.split(' -= ', 1)[1].strip()
+                mode = 'sub'
+                skip = False
+            else:
+                # if someone just types a random character then skip processing
+                skip = True
         # if we realize splitting atoms is just stupid,
         except:
             print("editval not found")
-        # now we check if its a list
-        if re.search(r"\[\d*,...,\d*\]", editval) or re.search(r"\[\d*,...,\d*,\d*\]", editval):
-            # just to not deal with the brackets, cut them off.
-            chucklenuts = editval[1:-1].split(',')
-            if len(chucklenuts) == 3:
-                # [x,...,y]
-                # step is implied
-                rangestep = 1
-                # x = min
-                rangemin = int(chucklenuts[0])
-                # y = max
-                rangemax = int(chucklenuts[2])
-            elif len(chucklenuts) == 4:
-                # [x,...,y,z]
-                # z = step
-                rangestep = int(chucklenuts[3])
-                # x = min
-                rangemin = int(chucklenuts[0])
-                # y = max
-                rangemax = int(chucklenuts[2])
-            else:
-                # dont know how this would get triggered but if something really bad happens...
-                print("probably did something wrong because it no workey. :3c")
-            # not turn everything into a fun list!
-            editval = numpy.arange(
-                rangemin, rangemax + rangestep, rangestep).tolist()
-        # for accessing nested variables we split it inefficiently
-        zzzparts = editkey.split('.')
-        # make/clear incrementing variable
-        inc = 0
-        # assign blank string
-        zzy = ""
-        # if editkey = 'skeleton.xpRate';
-        # zzzparts = ['skeleton','xpRate'];
-        # zzy = "['skeleton']['xpRate']"
-        # now just increment through to get a large string.
-        while inc < len(zzzparts):
-            try:
-                zzzpart = int(zzzparts[inc])
-            except:
-                zzzpart = str(zzzparts[inc])
-            zzy = zzy + str([zzzpart])
-            inc += 1
-        # try to edit variable if it exists. just using tryexcept to lazily
-        # catch errors and stop the program from exiting unexpectedly
-        # try:
-            # use exec because i dont know any workarounds.
-        exec('jsondata' + zzy + ' = editval')
-        # show edited keys, esp. for concatenated commands.
-        print("Key edited / (" + zzy + ") -> \"" + str(editval) + "\"")
-        # if anything happens during this,
-        # except:
-        #    print("something went wrong, probably misinput\nsowwy :3")
+        # just skip to prevent exiting.
+        if skip:
+            pass
+        else:
+            # now we check if its a list
+            if re.search(r"\[\d*,...,\d*\]", editval) or re.search(r"\[\d*,...,\d*,\d*\]", editval):
+                # just to not deal with the brackets, cut them off.
+                chucklenuts = editval[1:-1].split(',')
+                if len(chucklenuts) == 3:
+                    # [x,...,y]
+                    # step is implied
+                    rangestep = 1
+                    # x = min
+                    rangemin = int(chucklenuts[0])
+                    # y = max
+                    rangemax = int(chucklenuts[2])
+                elif len(chucklenuts) == 4:
+                    # [x,...,y,z]
+                    # z = step
+                    rangestep = int(chucklenuts[3])
+                    # x = min
+                    rangemin = int(chucklenuts[0])
+                    # y = max
+                    rangemax = int(chucklenuts[2])
+                else:
+                    # dont know how this would get triggered but if something really bad happens...
+                    print("probably did something wrong because it no workey. :3c")
+                # not turn everything into a fun list!
+                editval = numpy.arange(
+                    rangemin, rangemax + rangestep, rangestep).tolist()
+            # for accessing nested variables we split it inefficiently
+            zzzparts = editkey.split('.')
+            # make/clear incrementing variable
+            inc = 0
+            # assign blank string
+            zzy = ""
+            # if editkey = 'skeleton.xpRate';
+            # zzzparts = ['skeleton','xpRate'];
+            # zzy = "['skeleton']['xpRate']"
+            # now just increment through to get a large string.
+            while inc < len(zzzparts):
+                try:
+                    zzzpart = int(zzzparts[inc])
+                except:
+                    zzzpart = str(zzzparts[inc])
+                zzy = zzy + str([zzzpart])
+                inc += 1
+            # try to edit variable if it exists. just using tryexcept to lazily
+            # catch errors and stop the program from exiting unexpectedly
+            # try:
+                # use exec because i dont know any workarounds.
+            if mode == 'set':
+                pass
+            elif mode == 'add':
+                try:
+                    # halfassed solution.
+                    # do not replicate this code
+                    # i cant legally enforce this, it's just terrible.
+                    try:
+                        editval = int(editval)
+                    except:
+                        pass
+                    if isinstance(editval, int):
+                        exec('whatdoinamethis = int(jsondata' + zzy + ')',
+                             globals(), globals())
+                        editval = whatdoinamethis + int(editval)
+                    try:
+                        editval = list(editval)
+                    except:
+                        pass
+                    if isinstance(editval, list):
+                        exec('whatdoinamethis = list(jsondata' +
+                             zzy + ')', globals(), globals())
+                        editval = whatdoinamethis + list(editval)
+                    else:
+                        print("sowwy list and numbews onwy 3:")
+                except:
+                    print("woopsies :3c")
+            elif mode == 'sub':
+                # again, this is really horrible copy and pasted code.
+                try:
+                    # halfassed solution.
+                    # do not replicate this code
+                    # i cant legally enforce this, it's just terrible.
+                    try:
+                        editval = int(editval)
+                    except:
+                        pass
+                    if isinstance(editval, int):
+                        exec('whatdoinamethis = int(jsondata' + zzy + ')',
+                             globals(), globals())
+                        editval = whatdoinamethis - int(editval)
+                    else:
+                        print(
+                            "sowwy numbews onwy 3:\n lists awe too hawd to wowk with")
+                except:
+                    print("woopsies :3c")
+            exec('jsondata' + zzy + ' = editval')
+            # show edited keys, esp. for concatenated commands.
+            print("Key edited / (" + zzy + ") -> \"" + str(editval) + "\"")
+            # if anything happens during this,
+            # except:
+            #    print("something went wrong, probably misinput\nsowwy :3")
 
 
 # create infinite terminal.
 while True:
     # always ask for input
     cmd = input(" > ")
+    if cmd == '':
+        # if someone just hits enter
+        pass
     # check for concatenated commands
-    if ';' in cmd:
+    elif ';' in cmd:
         print("Running concatenated cmd")
         # treat each side of semicolons as an individual command
         cmds = cmd.split(';')
