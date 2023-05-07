@@ -14,6 +14,8 @@ notepad output.json
 ./dump.py encode output.json output.sav
 ```
 
+<p>this is not guaranteed to work on chalice12's mod, use dump.py and manually edit it. while from my short testing you can take a normal save, edit it, and put it into chalice's mod, i am unable to fully test this so you may lose some things.</p>
+
 # heres a demo
 
 https://user-images.githubusercontent.com/39711351/235377516-6963cf74-934e-4e8e-870a-0db6eeea0d47.mp4

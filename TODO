@@ -1,7 +1,5 @@
 - add editing support for items (need further reverse engineering to figure out what the hell im doing)
-- construction support
 - possibly add +=, -=, = opts
-- clear/cls command to make screen prettier
   get -= working with lists. cant find any methods.
 - maybe preset-esque things? like "
     > !preset maxresources

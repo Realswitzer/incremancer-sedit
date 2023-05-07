@@ -7,7 +7,6 @@ import json
 import os
 import re
 import operator
-# import code
 
 import fuckit  # this is bad practice.
 import lzstring
@@ -23,16 +22,16 @@ LZString = lzstring.LZString()
 parser = argparse.ArgumentParser()
 parser.add_argument("file", type=str, help="save file")
 parser.add_argument("-o", "--output", type=str, help="output file")
-parser.add_argument("-c", "--overwrite", action='store_true',
-                    help="confirm overwrite") # not used, need to implement.
+parser.add_argument(
+    "-c", "--overwrite", action="store_true", help="confirm overwrite"
+)  # not used, need to implement.
 args = parser.parse_args()
 
 # look for temp file and determine input file
-if os.path.exists('temp.tmp'):
-    howvarname = input(
-        "temp.tmp found. Would you like to load this instead? ").lower()
+if os.path.exists("temp.tmp"):
+    howvarname = input("temp.tmp found. Would you like to load this instead? ").lower()
     if howvarname == "y" or howvarname == "yes":
-        inputfile = 'temp.tmp'
+        inputfile = "temp.tmp"
     else:
         inputfile = args.file
 else:
@@ -68,29 +67,28 @@ else:
 jsondata = json.loads(data)
 
 # print info
-print("Input file: " + inputfile + " | Output file: " +
-      outputfile + " | Format: " + format)
+print(
+    "Input file: "
+    + inputfile
+    + " | Output file: "
+    + outputfile
+    + " | Format: "
+    + format
+)
 # manually delete useless variables
 del format
 
-# this extracts a list of keys from the json.
-# you may be looking at this and ask,
-# "but wait, why do you use this? doesnt this hardcode the values in cmdview
-# and couldn't you just replace it with list(jsondata) when not specified?
-# also doesn't this not even get used when checking if a key exists?"
-# well, yes. i should replace it but this is not made to be efficient.
-jsonkeys = list(jsondata)
-
 # sort by id, should figure out better way of doing this.
-jsondata['upgrades'].sort(key=operator.itemgetter('id'))
+jsondata["upgrades"].sort(key=operator.itemgetter("id"))
+jsondata["constructions"].sort(key=operator.itemgetter("id"))
 
 # terminal stuff
 # possibly make longer prefixes?
 # SHIPPING: Make sure this line is not commented out.
-cmdprefix = ["/", '!', '#', ':']
-if str(cmdprefix) == '' or cmdprefix == ['']:
+cmdprefix = ["/", "!", "#", ":"]
+if str(cmdprefix) == "" or cmdprefix == [""]:
     print("cmdprefix variable is screwed up, using emergency prefix '!'")
-    cmdprefix = '!'
+    cmdprefix = "!"
 
 
 def cmdexit(shouldsave=True):
@@ -114,7 +112,7 @@ def cmdsave():
     # SHIPPING: remove pyperclip.
     # pyperclip.copy(json.dumps(jsondata))
     # dump the data in a single line as it matters
-    vvv = json.dumps(jsondata, separators=(',', ':'))
+    vvv = json.dumps(jsondata, separators=(",", ":"))
     # pyperclip.copy(vvv)
     # write to the files, and close them
     tempfile.write(vvv)
@@ -123,63 +121,24 @@ def cmdsave():
     tempfile.close()
 
 
-# honestly none of this even does anything.
-currmenu = "term"
+# for upg/const: set min and max boundaries to make it better. or something.
+def check(x, min, max):
+    x = int(x)
+    if x < min:
+        return min
+    elif x > max:
+        return max
+    else:
+        return x
 
-
-def cmdmenu(menu="main"):
-    # so the current menu needs to be accessible.
-    global currmenu
-    # some debug code i forgot to delete
-    print(menu)
-    # should set to menu _after_ i check. but this doesnt work.
-    # stop crying about it i guess.
-    currmenu = menu
-    print("this doesnt really work sorry.")
-    # if menu == "main":
-    #     print("main menu")
-    # elif menu == "term":
-    #     print("terminal")
-    # elif menu == "stats":
-    #     print("stats menu")
-    # elif menu == "skeleton":
-    #     print("skeleton menu")
-    # elif menu == "runesmith":
-    #     print("runesmith menu")
-    # elif menu == "upgrades":
-    #     print("upgrades menu")
-    # elif menu == "constructions":
-    #     print("constructions menu")
-    # else:
-    #     print("Menu not found")
-
-
-def cmdprev():
-    # now this would make sense if the above function worked.
-    # it doesn't.
-    # get the current menu
-    global currmenu
-    # more debug code.
-    print(currmenu)
-    # optimization is cringe.
-    # given the bug in the cmdmenu which sets before checking, this could make
-    # this not work as intended.
-    if currmenu == "main":
-        cmdmenu('term')
-    elif currmenu in ['stats', 'skeleton', 'runesmith', 'upgrades', 'constructions']:
-        cmdmenu('main')
-    elif currmenu in ['blood_upg', 'brain_upg', 'part_upg', 'bone_upg', 'prestige_upg']:
-        cmdmenu('upgrades')
-    elif currmenu in ['items_skel', 'talents_skel', 'stats_skel']:
-        cmdmenu('skeleton')
 
 def cmdupgrades(x):
-    x = x.rpartition(' ')
+    x = list(x.rpartition(" "))
     skip = False
     # finally use switch statements.
     # need to fix x[2] = 1 in case user is trying to lock it
     # should determine if 1 or greater, x[2]=1 else x[2]=0 and convert to function
-    match re.compile('[^a-zA-Z ]').sub('', x[0].lower()):
+    match re.compile("[^a-zA-Z ]").sub("", x[0].lower()):
         case "bloodthirst":
             listelement = 0
         case "like leather":
@@ -195,10 +154,10 @@ def cmdupgrades(x):
         case "detonate":
             listelement = 6
             # this can only be on or off, no point in having level 1000
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "gigazombies":
             listelement = 7
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "sharpened teeth":
             listelement = 8
         case "thick skull":
@@ -221,7 +180,7 @@ def cmdupgrades(x):
             listelement = 17
         case "energy rush":
             listelement = 18
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "master summoner":
             listelement = 19
         case "primal reflexes":
@@ -230,19 +189,19 @@ def cmdupgrades(x):
             listelement = 21
         case "unholy construction":
             listelement = 22
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "infected corpse":
             listelement = 23
         case "energy charge":
             listelement = 24
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "what doesnt kill you":
             listelement = 25
         case "one is never enough":
             listelement = 26
         case "tank buster":
             listelement = 27
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "improved spikes":
             listelement = 28
         case "bone throne":
@@ -257,7 +216,7 @@ def cmdupgrades(x):
             listelement = 33
         case "earth freeze":
             listelement = 34
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "plague armor":
             listelement = 35
         case "bulletproof":
@@ -282,30 +241,161 @@ def cmdupgrades(x):
             listelement = 45
         case "time warp":
             listelement = 46
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "master of death":
             listelement = 47
         case "parts rate":
             listelement = 48
         case "auto construction":
             listelement = 49
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "graveyard health":
             listelement = 50
         case "auto shop":
             listelement = 51
-            x[2] = 1
+            x[2] = check(x[2], 0, 1)
         case "talent point":
             listelement = 52
+            x[2] = check(x[2], 0, 120)
         case _:
             skip = True
     if not skip == True:
         listelement = "[" + str(listelement) + "]"
-        exec('jsondata["upgrades"]' + listelement + '[\"rank\"] = x[2]', globals(), locals())
+        exec(
+            'jsondata["upgrades"]' + listelement + '["rank"] = x[2]',
+            globals(),
+            locals(),
+        )
         # show edited keys, esp. for concatenated commands.
-        print("Key edited / ([\"upgrades\"]" + str(listelement) + "[\"rank\"]) -> \"" + str(x[2]) + "\"")
+        print(
+            'Key edited / (["upgrades"]'
+            + str(listelement)
+            + '["rank"]) -> "'
+            + str(x[2])
+            + '"'
+        )
     else:
         print("skipped")
+
+
+def cmdconstructions(x):
+    x = x.rsplit(" ", 2)
+    listelement = -1
+    match re.compile("[^a-zA-Z0-9 ]").sub("", x[0].lower()):
+        case ("cursed graveyard" | "graveyard"):
+            # how the hell do i do anything with check()?
+            # maybe make new function to shorten this massively
+            listelement = 0
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("perimeter fence" | "fence"):
+            listelement = 1
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("bigger fence" | "fencesize"):
+            listelement = 2
+            x[1] = check(x[1], 0, 1)
+        case ("plague workshop" | "plagueworkshop" | "workshop"):
+            listelement = 3
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("crypt"):
+            listelement = 4
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("bone fort" | "fort"):
+            listelement = 5
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("bone fortress" | "fortress"):
+            listelement = 6
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("plague spikes" | "plaguespikes" | "spikes"):
+            listelement = 7
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("spell tower" | "spelltower"):
+            listelement = 8
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("runesmith"):
+            listelement = 9
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("bone citadel" | "citadel"):
+            listelement = 10
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("accursed aviary" | "aviary"):
+            listelement = 11
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("zombie cage" | "zombiecage" | "cage1" | "zombie cage 1" | "zombiecage1"):
+            listelement = 12
+            x[1] = check(x[1], 0, 1)
+        case ("second zombie cage" | "zombiecage2" | "cage2" | "zombie cage 2"):
+            listelement = 13
+            x[1] = check(x[1], 0, 1)
+        case ("third zombie cage" | "zombiecage3" | "cage3" | "zombie cage 3"):
+            listelement = 14
+            x[1] = check(x[1], 0, 1)
+        case ("fourth zombie cage" | "zombiecage4" | "cage4" | "zombie cage 4"):
+            listelement = 15
+            x[1] = check(x[1], 0, 1)
+        case ("fifth zombie cage" | "zombiecage5" | "cage5" | "zombie cage 5"):
+            listelement = 16
+            x[1] = check(x[1], 0, 1)
+        case ("plague laboratory" | "plaguelaboratory" | "laboratory"):
+            listelement = 17
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("part factory" | "partfactory"):
+            listelement = 18
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("creature factory" | "creaturefactory"):
+            listelement = 19
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+        case ("bottomless pit" | "pit"):
+            listelement = 20
+            x[1] = check(x[1], 0, 10)
+            x[2] = check(x[2], 0, 1)
+        case ("harpy outfitter" | "harpy" | "outfitter"):
+            listelement = 21
+            x[1] = check(x[1], 0, 1)
+            x[2] = check(x[2], 0, 1)
+    if not listelement == -1:
+        listelement = "[" + str(listelement) + "]"
+        exec(
+            'jsondata["constructions"]' + listelement + '["rank"] = x[1]',
+            globals(),
+            locals(),
+        )
+        exec(
+            'jsondata["constructions"]' + listelement + '["effect"] = x[2]',
+            globals(),
+            locals(),
+        )
+        # show edited keys, esp. for concatenated commands.
+        print(
+            'Key edited / (["constructions"]'
+            + str(listelement)
+            + '["rank"]) -> "'
+            + str(x[1])
+            + '"'
+        )
+        print(
+            'Key edited / (["constructions"]'
+            + str(listelement)
+            + '["effect"]) -> "'
+            + str(x[2])
+            + '"'
+        )
+    else:
+        print("skipped")
+
 
 def cmdhelp():
     # create incrementing variable
@@ -318,12 +408,32 @@ def cmdhelp():
     # now this does require manual updating, is outdated, and if you get
     # anything in the wrong order then all of the help texts for each cmd
     # is out of order.
-    cmds = ["help", "exit", "save", "saveas", "menu", "view", "dedupe", "upgrades", "clear", "eval", "exec"]
-    cmdshelps = ["Prints list of editor commands", "Exits save editor",
-                 "Saves file", "Saves file as new file, changes output", "Opens different menus",
-                 "View value of key (@all shows all keys) <key,@all,key.nestkey>", "Deduplicate lists",
-                 "Edit upgrade values by name", "clears screen", "Arbitrary code execution - evaluate expressions",
-                 "Arbitrary code execution - execute code. but with exec()"]
+    cmds = [
+        "help",
+        "exit",
+        "save",
+        "saveas",
+        "view",
+        "dedupe",
+        "upgrades",
+        "constructions",
+        "clear",
+        "eval",
+        "exec",
+    ]
+    cmdshelps = [
+        "Prints list of editor commands",
+        "Exits save editor",
+        "Saves file",
+        "Saves file as new file, changes output",
+        "View value of key (@all shows all keys) <key,@all,key.nestkey>",
+        "Deduplicate lists",
+        "Edit upgrade values by name",
+        "Edit constructions by name",
+        "Clears screen",
+        "Arbitrary code execution - evaluate expressions",
+        "Arbitrary code execution - execute code. but with exec()",
+    ]
     # now we just increment through everything and print the help message! easy!
     while x < len(cmds):
         print(str(cmdprefix[0]) + cmds[x] + " - " + cmdshelps[x])
@@ -334,11 +444,11 @@ def cmdview(x):
     # view key values. this is an actually useful command.
     # print name of every key in base
     if x == "@all":
-        print(jsonkeys)
-    elif x == '':
+        print(list(jsondata))
+    elif x == "":
         print("invalid syntax")
     else:
-        zzzparts = x.split('.')
+        zzzparts = x.split(".")
         # make/clear incrementing variable
         inc = 0
         # assign blank string
@@ -360,16 +470,12 @@ def cmdview(x):
         # catch errors and stop the program from exiting unexpectedly
         try:
             # use exec because i dont know any workarounds.
-            exec('print(jsondata' + zzy + ')')
+            exec("print(jsondata" + zzy + ")")
         # if anything happens during this,
         except:
             print("something went wrong, probably misinput\nsowwy :3")
 
 
-# to gatekeep using eval and exec, even though from the user perspective
-# they basically do nothing of value, just have them type a long ass phrase
-# every time they start the program!
-# hell, this is so secure you can't even set variables. debugging this was ass.
 # may turn this into a settings file so you dont have to type
 # 'ok trust me bro' every single time.
 evalagree = False
@@ -383,7 +489,14 @@ def cmdeval(x):
     global evalagree
     global evalphrase
     if evalagree == False:
-        if input("The eval command is a dangerous command, it is literally just arbitrary code execution. By typing '" + evalphrase + "', you will be able to execute arbitrary code. This is dangerous and not recommended. ") == evalphrase:
+        if (
+            input(
+                "The eval command is a dangerous command, it is literally just arbitrary code execution. By typing '"
+                + evalphrase
+                + "', you will be able to execute arbitrary code. This is dangerous and not recommended. "
+            )
+            == evalphrase
+        ):
             evalagree = True
     if evalagree:
         eval(x, globals(), globals())
@@ -398,20 +511,21 @@ def cmdexec(x):
     global evalagree
     global evalphrase
     if evalagree == False:
-        if input("The exec command is a dangerous command, it is literally just arbitrary code execution. By typing '" + evalphrase + "', you will be able to execute arbitrary code. This is dangerous and not recommended. ") == evalphrase:
+        if (
+            input(
+                "The exec command is a dangerous command, it is literally just arbitrary code execution. By typing '"
+                + evalphrase
+                + "', you will be able to execute arbitrary code. This is dangerous and not recommended. "
+            )
+            == evalphrase
+        ):
             evalagree = True
     if evalagree:
         exec(x, globals(), globals())
 
-# now this was going to just throw people into an interactive shell, like if
-# you typed 'python3'. that didn't work.
-# @fuckit
-# def cmdinteractiveinterpreter():
-#     code.InteractiveInterpreter(locals=locals())
-
 
 def cmddedupe(x):
-    zzzparts = x.split('.')
+    zzzparts = x.split(".")
     # make/clear incrementing variable
     inc = 0
     # assign blank string
@@ -428,48 +542,37 @@ def cmddedupe(x):
         zzy = zzy + str([zzzpart])
         inc += 1
     exec("zz = list(dict.fromkeys(jsondata" + zzy + "))", globals(), globals())
-    exec('jsondata' + zzy + ' = zz')
+    exec("jsondata" + zzy + " = zz")
     print("Deduped " + str(zzy))
     cmdview(x)
 
 
 def cmdCheck(cmdinput):
+    # remake as switch statement?
     # check command input.
     # insert some code that checks the command i guess
     # make this more efficient pls
     # try to split the command if it's not just one word.
-    if ' ' in cmdinput:
-        cmd = cmdinput.split(' ', 1)[0]
-        rest = cmdinput.split(' ', 1)[1]
+    if " " in cmdinput:
+        cmd = cmdinput.split(" ", 1)[0]
+        rest = cmdinput.split(" ", 1)[1]
     else:
         cmd = cmdinput
-        rest = ''
+        rest = ""
     # convert everything to a string. why? no idea.
     cmd = str(cmd)
     # alright now get ready for some yandev level shit, this is intense.
     # exit this bad program
     if cmd == "exit":
         # lol this doesnt work.
-        if rest == '':
+        if rest == "":
             cmdexit()
         else:
             cmdexit(rest)
-    # return to prev menu
-    elif cmd == "prev" or cmd == "back":
-        cmdprev()
-    # again interactive shell didn't work.
-    # elif cmd == "ii":
-    #     cmdinteractiveinterpreter()
     # stuff that uses "rest"
-    # this command is basically useless.
-    elif cmd == "menu":
-        if rest == '':
-            cmdmenu()
-        else:
-            cmdmenu(rest)
     # save this important file.
     elif cmd == "save":
-        if rest == '':
+        if rest == "":
             cmdsave()
         else:
             cmdsave(rest)
@@ -483,25 +586,30 @@ def cmdCheck(cmdinput):
     elif cmd == "view":
         cmdview(rest)
     # aliases
-    # stats does nothing.
-    elif cmd == "stats":
-        cmdmenu("stats")
-    # why did i put this under aliases?
     # prints help
     elif cmd == "help" or cmd == "?":
         cmdhelp()
     # deduplicate lists
     elif cmd == "dedupe" or cmd == "deduplicate":
         cmddedupe(rest)
-    # open upgrades menu
+    # upgrades thing
     elif cmd == "upgrades" or cmd == "upgrade" or cmd == "upg":
         cmdupgrades(rest)
+    # edit constructions
+    elif (
+        cmd == "constructions"
+        or cmd == "construction"
+        or cmd == "construct"
+        or cmd == "const"
+    ):
+        cmdconstructions(rest)
     # other
     elif cmd == "cls" or cmd == "clear":
-        os.system('cls' if os.name == "nt" else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
     elif cmd == ":3":
         # :3
-        print('''
+        print(
+            """
                    ██████████▄
           ████     ████████████
           ████              ████
@@ -514,7 +622,8 @@ def cmdCheck(cmdinput):
           ████          ▄██████▀
                     █████████▀
                     █████▀
-                    ''')
+                    """
+        )
     # and if nothing else catches input,
     else:
         print("Editor command not found.")
@@ -523,7 +632,8 @@ def cmdCheck(cmdinput):
 # prints different help, may make SETTINGS that will turn this off for people
 # used to the weird way of save editing via cli
 print(
-    "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]")
+    "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]"
+)
 
 
 def parseCmd(cmd):
@@ -539,22 +649,22 @@ def parseCmd(cmd):
             # editkey - key to be edited
             # editval - value to be assigned
             # should figure out more efficient method to do all of this.
-            if ' = ' in cmd:
-                editkey = cmd.split(' = ', 1)[0]
-                editval = cmd.split(' = ', 1)[1].strip()
+            if " = " in cmd:
+                editkey = cmd.split(" = ", 1)[0]
+                editval = cmd.split(" = ", 1)[1].strip()
                 # determine mode
-                mode = 'set'
+                mode = "set"
                 # stop this from erroring.
                 skip = False
-            elif ' += ' in cmd:
-                editkey = cmd.split(' += ', 1)[0]
-                editval = cmd.split(' += ', 1)[1].strip()
-                mode = 'add'
+            elif " += " in cmd:
+                editkey = cmd.split(" += ", 1)[0]
+                editval = cmd.split(" += ", 1)[1].strip()
+                mode = "add"
                 skip = False
-            elif ' -= ' in cmd:
-                editkey = cmd.split(' -= ', 1)[0]
-                editval = cmd.split(' -= ', 1)[1].strip()
-                mode = 'sub'
+            elif " -= " in cmd:
+                editkey = cmd.split(" -= ", 1)[0]
+                editval = cmd.split(" -= ", 1)[1].strip()
+                mode = "sub"
                 skip = False
             else:
                 # if someone just types a random character then skip processing
@@ -567,9 +677,11 @@ def parseCmd(cmd):
             pass
         else:
             # now we check if its a list
-            if re.search(r"\[\d*,...,\d*\]", editval) or re.search(r"\[\d*,...,\d*,\d*\]", editval):
+            if re.search(r"\[\d*,...,\d*\]", editval) or re.search(
+                r"\[\d*,...,\d*,\d*\]", editval
+            ):
                 # just to not deal with the brackets, cut them off.
-                chucklenuts = editval[1:-1].split(',')
+                chucklenuts = editval[1:-1].split(",")
                 if len(chucklenuts) == 3:
                     # [x,...,y]
                     # step is implied
@@ -591,9 +703,10 @@ def parseCmd(cmd):
                     print("probably did something wrong because it no workey. :3c")
                 # not turn everything into a fun list!
                 editval = numpy.arange(
-                    rangemin, rangemax + rangestep, rangestep).tolist()
+                    rangemin, rangemax + rangestep, rangestep
+                ).tolist()
             # for accessing nested variables we split it inefficiently
-            zzzparts = editkey.split('.')
+            zzzparts = editkey.split(".")
             # make/clear incrementing variable
             inc = 0
             # assign blank string
@@ -612,10 +725,10 @@ def parseCmd(cmd):
             # try to edit variable if it exists. just using tryexcept to lazily
             # catch errors and stop the program from exiting unexpectedly
             # try:
-                # use exec because i dont know any workarounds.
-            if mode == 'set':
+            # use exec because i dont know any workarounds.
+            if mode == "set":
                 pass
-            elif mode == 'add':
+            elif mode == "add":
                 try:
                     # halfassed solution.
                     # do not replicate this code
@@ -626,22 +739,28 @@ def parseCmd(cmd):
                         pass
                     whatdoinamethis = int
                     if isinstance(editval, int):
-                        exec('whatdoinamethis = int(jsondata' + zzy + ')',
-                             globals(), globals())
+                        exec(
+                            "whatdoinamethis = int(jsondata" + zzy + ")",
+                            globals(),
+                            globals(),
+                        )
                         editval = whatdoinamethis + int(editval)
                     try:
                         editval = list(editval)
                     except:
                         pass
                     if isinstance(editval, list):
-                        exec('whatdoinamethis = list(jsondata' +
-                             zzy + ')', globals(), globals())
+                        exec(
+                            "whatdoinamethis = list(jsondata" + zzy + ")",
+                            globals(),
+                            globals(),
+                        )
                         editval = whatdoinamethis + list(editval)
                     else:
                         print("sowwy list and numbews onwy 3:")
                 except:
                     print("woopsies :3c")
-            elif mode == 'sub':
+            elif mode == "sub":
                 # again, this is really horrible copy and pasted code.
                 try:
                     # halfassed solution.
@@ -652,17 +771,19 @@ def parseCmd(cmd):
                     except:
                         pass
                     if isinstance(editval, int):
-                        exec('whatdoinamethis = int(jsondata' + zzy + ')',
-                             globals(), globals())
+                        exec(
+                            "whatdoinamethis = int(jsondata" + zzy + ")",
+                            globals(),
+                            globals(),
+                        )
                         editval = whatdoinamethis - int(editval)
                     else:
-                        print(
-                            "sowwy numbews onwy 3:\n lists awe too hawd to wowk with")
+                        print("sowwy numbews onwy 3:\n lists awe too hawd to wowk with")
                 except:
                     print("woopsies :3c")
-            exec('jsondata' + zzy + ' = editval')
+            exec("jsondata" + zzy + " = editval")
             # show edited keys, esp. for concatenated commands.
-            print("Key edited / (" + zzy + ") -> \"" + str(editval) + "\"")
+            print("Key edited / (" + zzy + ') -> "' + str(editval) + '"')
             # if anything happens during this,
             # except:
             #    print("something went wrong, probably misinput\nsowwy :3")
@@ -672,14 +793,14 @@ def parseCmd(cmd):
 while True:
     # always ask for input
     cmd = input(" > ")
-    if cmd == '':
+    if cmd == "":
         # if someone just hits enter
         pass
     # check for concatenated commands
-    elif ';' in cmd:
+    elif ";" in cmd:
         print("Running concatenated cmd")
         # treat each side of semicolons as an individual command
-        cmds = cmd.split(';')
+        cmds = cmd.split(";")
         # help javascript users not break everything when ending with semicolon
         cmds = list(filter(None, cmds))
         # incrementing variable

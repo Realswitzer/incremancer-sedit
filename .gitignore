@@ -11,3 +11,5 @@ term.py
 *test*.*
 # ignore copies of files
 * copy*.*
+# until i can figure out what changes with chalice's saves,
+chalice/*
