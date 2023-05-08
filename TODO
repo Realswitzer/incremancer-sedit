@@ -1,13 +1,6 @@
 - add editing support for items (need further reverse engineering to figure out what the hell im doing)
 - possibly add +=, -=, = opts
   get -= working with lists. cant find any methods.
-- maybe preset-esque things? like "
-    > !preset maxresources
-    Keys edited
-  "
-  and in maxresources.(whatever extension is used):
-    blood = null; brains = null; bones = null; parts = null; bonesTotal = null)
-  i guess?
 - suggest similar named keys (i.e. typing bonws will suggest bones)
 - optimize this. sorry sov :(
 - figure out how to reduce the amount of if statements

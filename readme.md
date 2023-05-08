@@ -4,7 +4,7 @@
 
 <p>oh yeah i also made one of the worst code samples. feel free to use as an example of flat out terrible code.</p>
 
-# this does not work well
+# this works slightly better than when i last changed this text
 
 <p>it sorta works. to just decompress the save so you can see inside of it, use dump.py</p>
 
@@ -14,7 +14,7 @@ notepad output.json
 ./dump.py encode output.json output.sav
 ```
 
-<p>this is not guaranteed to work on chalice12's mod, use dump.py and manually edit it. while from my short testing you can take a normal save, edit it, and put it into chalice's mod, i am unable to fully test this so you may lose some things.</p>
+<p>this is not guaranteed to work on chalice12's mod, use dump.py and manually edit it. while from my short testing you can take a normal save, edit it, and put it into chalice's mod, i am unable to fully test backwards compatability so you may lose some things.</p>
 
 # heres a demo
 

@@ -1,0 +1,9 @@
+All editor commands in presets use /, this is to ensure consistency if someone decides to change their command prefixes.
+Everything is on a single line.
+All commands are seperated by semicolons (spaces behind and after are optional), i.e.
+blood = 10;brains = 10;/upg bloodthirst 2000;/exit
+
+Comments in the preset file should be on line two and after. Sorry.
+Feel free to file complaints on the github repository.
+
+KNOWN BUGS: When bulk editing keys, it doesn't show "Key edited / (key) -> val". This is visual and the keys are still modified.

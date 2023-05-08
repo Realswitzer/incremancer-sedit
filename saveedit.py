@@ -146,10 +146,13 @@ def cmdupgrades(x):
         case "cold storage":
             listelement = 2
         case "recycling is cool":
+            # unsure if theres a real limit
             listelement = 3
         case "your soul is mine":
+            # not sure if limit
             listelement = 4
         case "infected bite":
+            # not sure if limit
             listelement = 5
         case "detonate":
             listelement = 6
@@ -412,11 +415,12 @@ def cmdhelp():
         "help",
         "exit",
         "save",
-        "saveas",
+        # "saveas",
         "view",
         "dedupe",
         "upgrades",
         "constructions",
+        "preset",
         "clear",
         "eval",
         "exec",
@@ -425,11 +429,12 @@ def cmdhelp():
         "Prints list of editor commands",
         "Exits save editor",
         "Saves file",
-        "Saves file as new file, changes output",
+        # "Saves file as new file, changes output",
         "View value of key (@all shows all keys) <key,@all,key.nestkey>",
         "Deduplicate lists",
         "Edit upgrade values by name",
         "Edit constructions by name",
+        "Loads preset file",
         "Clears screen",
         "Arbitrary code execution - evaluate expressions",
         "Arbitrary code execution - execute code. but with exec()",
@@ -547,6 +552,33 @@ def cmddedupe(x):
     cmdview(x)
 
 
+def cmdpreset(filename):
+    global cmdprefix
+    if "." in filename:
+        filename = list(filename.rpartition("."))
+    else:
+        filename = [
+            filename,
+            ".",
+            "sep",
+        ]  # save edit/sedit preset, hopefully this causes no conflict. i know it would cause conflict with people naming their file with no extension -- further checks needed
+    l = "./presets/" + filename[0] + "." + filename[2]
+    if os.path.exists(l):
+        found = True
+    else:
+        found = False
+    if found:
+        print("Using preset file")
+        npfx = cmdprefix
+        cmdprefix = "/"
+        r = open(l)
+        okaywhatdoinamethis(r.readline())
+        r.close()
+        cmdprefix = npfx
+    else:
+        print("File not found >> " + l)
+
+
 def cmdCheck(cmdinput):
     # remake as switch statement?
     # check command input.
@@ -561,7 +593,6 @@ def cmdCheck(cmdinput):
         rest = ""
     # convert everything to a string. why? no idea.
     cmd = str(cmd)
-    # alright now get ready for some yandev level shit, this is intense.
     # exit this bad program
     if cmd == "exit":
         # lol this doesnt work.
@@ -603,6 +634,9 @@ def cmdCheck(cmdinput):
         or cmd == "const"
     ):
         cmdconstructions(rest)
+    # load preset - no saving supported in program. cry.
+    elif cmd == "preset":
+        cmdpreset(rest)
     # other
     elif cmd == "cls" or cmd == "clear":
         os.system("cls" if os.name == "nt" else "clear")
@@ -789,10 +823,8 @@ def parseCmd(cmd):
             #    print("something went wrong, probably misinput\nsowwy :3")
 
 
-# create infinite terminal.
-while True:
-    # always ask for input
-    cmd = input(" > ")
+# rip this part out, may need to incorporate into parsecmd
+def okaywhatdoinamethis(cmd):
     if cmd == "":
         # if someone just hits enter
         pass
@@ -812,3 +844,11 @@ while True:
     # otherwise bypass this entire mess.
     else:
         parseCmd(cmd)
+
+
+# create infinite terminal.
+while True:
+    # always ask for input
+    cmd = input(" > ")
+    # lazy way to make presets work.
+    okaywhatdoinamethis(cmd)
