@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
+# incremancer-sedit: A save editor for Incremancer
+# Copyright (C) 2023  Realswitzer/Switz
+
+# This file is part of incremancer-sedit.
+#
+# incremancer-sedit is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# incremancer-sedit is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>. 
 import os
 
+print("Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages.")
 protected_dirs = [".git", ".venv", ".vscode", "presets", "chalice"]
 protected_files = [
     ".gitignore",
@@ -11,6 +22,7 @@ protected_files = [
     "readme.md",
     "saveedit.py",
     "TODO",
+    "sedit.cfg"
 ]
 x = input("1. empty files and temp.tmp\n2. all sav/json files\n3. both\n4. exit\n")
 try:

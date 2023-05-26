@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 
+# incremancer-sedit: A save editor for Incremancer
+# Copyright (C) 2023  Realswitzer/Switz
+
+# This file is part of incremancer-sedit.
+#
+# incremancer-sedit is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+#
+# incremancer-sedit is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+
 # pretend that theres a link to the license file. im too lazy.
 # you will NOT import the entire python base installation modules
 import argparse
@@ -14,6 +25,10 @@ import numpy
 
 # SHIPPING: REMOVE THIS
 # import pyperclip
+
+print(
+    "Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages."
+)
 
 # be able to call LZString.func() rather than lzstring.LZString().func().
 LZString = lzstring.LZString()
@@ -579,6 +594,224 @@ def cmdpreset(filename):
         print("File not found >> " + l)
 
 
+def viewitemdata(item, type, text):
+    if type == "s" or type == "r" or type == "p" or type == "e" or type == "se":
+        incr = 0
+        val = int
+        lval = str
+        match type:
+            case "s":
+                val = int(item["s"]) - 1
+                vals = ["Helmet", "Chest", "Legs", "Gloves", "Boots", "Sword", "Shield"]
+            case "r":
+                val = int(item["r"]) - 1
+                vals = ["Common", "Rare", "Epic", "Legendary"]
+            case "p":
+                val = int(item["p"])
+                match int(
+                    item["r"]
+                ) - 1:  # this is from it being based on rarity, so need to get rarity to determine prefix
+                    case 0:
+                        vals = [
+                            "Wooden",
+                            "Sturdy",
+                            "Rigid",
+                            "Iron",
+                            "Rusty",
+                            "Flimsy",
+                            "Battered",
+                            "Damaged",
+                            "Used",
+                            "Stained",
+                            "Training",
+                        ]
+                    case 1:
+                        vals = [
+                            "Steel",
+                            "Shiny",
+                            "Polished",
+                            "Forged",
+                            "Plated",
+                            "Bronze",
+                            "Reinforced",
+                            "Veteran's",
+                            "Reliable",
+                        ]
+                    case 2:
+                        vals = [
+                            "Antique",
+                            "Ancient",
+                            "Famous",
+                            "Bejeweled",
+                            "Notorious",
+                            "Historic",
+                            "Mythical",
+                            "Extraordinary",
+                        ]
+                    case 3:
+                        vals = [
+                            "Monstrous",
+                            "Diabolical",
+                            "Withering",
+                            "Terrible",
+                            "Demoniacal",
+                        ]
+            case "e":
+                lval = item["e"]
+                vals = [
+                    "-1 second respawn time",
+                    "+1 movement speed",
+                    "+{health} zombie health",
+                    "+{dmg} zombie damage",
+                    "+1 zombie speed",
+                ]
+            case "se":
+                lval = item["se"]
+                vals = [
+                    "Time Warp",
+                    "Energy Charge",
+                    "Detonate",
+                    "Earth Freeze",
+                    "Gigazombies",
+                    "Incinerate",
+                    "Pandemic",
+                ]
+
+        if isinstance(lval, list):
+            cv = ""
+            for x in lval:
+                incr = 0
+                while incr < len(vals):
+                    if x - 1 == incr:
+                        val = vals[incr]
+                        cv += ", " + val
+                    incr += 1
+            print(
+                text, cv[2:].format(health=24 * int(item["l"]), dmg=3 * int(item["l"]))
+            )
+        else:
+            while incr < len(vals):
+                if val == incr:
+                    val = vals[incr]
+                incr += 1
+            if isinstance(val, int):
+                if val > len(vals):
+                    val = str(val) + " (Illegal value?)"
+            print(text, val)
+    # elif type == 'r': #this is literally copy and pasted from above, why am i doing it like this
+    #    incr = 0
+    #    rarity = int(item['r'])
+    #    rarities = ['Common','Rare','Epic','Legendary']
+    #    while incr < len(rarities):
+    #        if rarity == incr:
+    #            rarity = rarities[incr]
+    #        incr += 1
+    #    print(text,rarity)
+    else:
+        print(text, item[type])
+
+
+def viewitem(id, type):
+    item = jsondata["skeleton"]["items"][int(id) - 1]
+    match type:
+        case "*" | "all" | "full":  # all
+            x = 0
+            types = ["id", "l", "s", "r", "p", "e", "se", "q"]
+            texts = [
+                "ID:",
+                "Level:",
+                "Type:",
+                "Rarity:",
+                "Prefix:",
+                "Effects:",
+                "Special Effects:",
+                "Equipped:",
+            ]
+            while x < len(types):
+                viewitemdata(item, types[x], texts[x])
+                x += 1
+        case "raw":  # just prints the json of the selected item, debug i guess
+            print(item)
+        case "id":
+            viewitemdata(item, "id", "ID:")
+        case "level" | "l" | "lvl":
+            viewitemdata(item, "l", "Level:")
+        case "s" | "type" | "itype" | "itemtype":
+            viewitemdata(item, "s", "Type:")
+        case "r" | "rarity":
+            viewitemdata(item, "r", "Rarity:")
+        case "p" | "prefix":
+            viewitemdata(item, "p", "Prefix:")
+        case "e" | "effects" | "stats":
+            viewitemdata(item, "e", "Effects:")
+        case "se" | "special effects" | "spells":
+            viewitemdata(item, "se", "Special Effects:")
+        case _:
+            print("nuh uh you did something wrong stupid dum dum")
+
+
+def edititem(x, id):
+    v = len(jsondata["skeleton"]["items"])
+    match x:
+        case -1:
+            # exec('print(jsondata[\'skeleton\'][\'items\'][' + id + '])')
+            viewitem(id, "*")
+            z = input("Are you sure? y/n ").lower()
+            if z == "y" or z == "yes":
+                del jsondata["skeleton"]["items"][int(id) - 1]
+                print("Item deleted")
+        case _:
+            print("not implemented")
+
+
+def cmditem(x):
+    # item editor thingy.
+    # later make it so people can just type it one line/cmd so can put in preset
+    # if x == '':
+    x = str(x)  # stop editor from complaining
+    while True:
+        finput = "\nItem Menu ({items} items):\n1: View Item | 2: Create Item | 3: Edit Item | 4: Delete Item | 5/q: Exit item editing menu\n".format(
+            items=len(jsondata["skeleton"]["items"])
+        )
+        v = input(finput)
+        v = v.split(" ")
+        match v[0]:
+            case "1":
+                try:
+                    vv = int(input("Insert number: "))
+                except:
+                    print("Input not integer, exiting item editor.")
+                    return
+
+                try:
+                    viewitem(vv, "*")
+                except IndexError:
+                    print("Item does not exist")
+            case "2":
+                try:
+                    edititem(1, input("Insert number: "))
+                except IndexError:
+                    print(
+                        "Item does not exist"
+                    )  # yeah this makes sense, it's creating an item out of thin air wtf was i doing
+            case "3":
+                try:
+                    edititem(0, input("Insert number: "))
+                except IndexError:
+                    print("Item does not exist")
+            case "4":
+                try:
+                    edititem(-1, input("Insert number: "))
+                except IndexError:
+                    print("Item does not exist")
+            case "5" | "q":
+                print("Exiting item editor")
+                break
+            case _:
+                print("Invalid input; exiting item editor")
+                break
+
+
 def cmdCheck(cmdinput):
     # remake as switch statement?
     # check command input.
@@ -640,6 +873,8 @@ def cmdCheck(cmdinput):
     # other
     elif cmd == "cls" or cmd == "clear":
         os.system("cls" if os.name == "nt" else "clear")
+    elif cmd == "item":
+        cmditem(rest)
     elif cmd == ":3":
         # :3
         print(
