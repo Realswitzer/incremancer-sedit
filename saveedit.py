@@ -18,14 +18,21 @@ import json
 import os
 import re
 import operator
+import configparser
 
 import fuckit  # this is bad practice.
 import lzstring
 import numpy
 
-print(
-    "Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages."
-)
+# use configparser to look at sedit.cfg
+config = configparser.ConfigParser()
+if not os.path.exists('sedit.cfg'):
+    open('sedit.cfg','w').write('[Main]\n;This is pretty much in an ini file format.\n;Should GPLv3 info show every run?\nShowGPL = True\n;Should "hii use !help..." show every run?\nShowHelp = True\n;Should /eval and /exec work?\nAllowACE = False\n;Currently does nothing\n;Is Chalice\'s mod used on the save? Ensures proper parsing.\nIsChalice = False')
+config.read('sedit.cfg')
+if config['Main']['ShowGPL'] == 'True':
+    print(
+        "Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages."
+    )
 
 # be able to call LZString.func() rather than lzstring.LZString().func().
 LZString = lzstring.LZString()
@@ -103,10 +110,10 @@ if str(cmdprefix) == "" or cmdprefix == [""]:
     cmdprefix = "!"
 
 
-def cmdexit(shouldsave=True):
+def cmdexit():
     # save and exit, deleting temp.tmp. much more graceful than ctrl+c.
     # uh this doesnt work it literally just saves anyways. sorry.
-    if shouldsave:
+    if input("Save file? ").lower() in ['y', 'yes', 'ok', 'sure']:
         # just call the save command real quick
         cmdsave()
     # get rid of the temp file that doesn't have much point.
@@ -118,16 +125,26 @@ def cmdsave():
     # the actual save part
     # now jsondata needs to be accessible in this function
     global jsondata
-    # pretty much just open the files to write to
-    file = open(outputfile, "w")
-    tempfile = open("temp.tmp", "w")
     # dump the data in a single line as it matters
     vvv = json.dumps(jsondata, separators=(",", ":"))
-    # write to the files, and close them
-    tempfile.write(vvv)
-    file.write(LZString.compressToEncodedURIComponent(vvv))
-    file.close()
-    tempfile.close()
+    # pretty much just open the files to write to
+    if not args.overwrite:
+        if input("File already exists. Overwrite? ").lower() in ['y','yes']:
+            file = open(outputfile, "w")
+            file.write(LZString.compressToEncodedURIComponent(vvv))
+            file.close()
+            tempfile = open("temp.tmp", "w")
+            tempfile.write(vvv)
+            tempfile.close()
+    else:
+        file = open(outputfile, "w")
+        file.write(LZString.compressToEncodedURIComponent(vvv))
+        file.close()
+        tempfile = open("temp.tmp", "w")
+        tempfile.write(vvv)
+        tempfile.close()
+    
+    
 
 
 # for upg/const: set min and max boundaries to make it better. or something.
@@ -490,29 +507,10 @@ def cmdview(x):
             print("something went wrong, probably misinput\nsowwy :3")
 
 
-# may turn this into a settings file so you dont have to type
-# 'ok trust me bro' every single time.
-evalagree = False
-# evalphrase = "This is a terrible practice and should not be used in the slightest" # SHIPPING: Make sure this line is not commented out.
-evalphrase = "ok trust me bro"
-
-
 @fuckit  # ooh spooky bad practice
 # now just throw input in eval command. got it? good.
 def cmdeval(x):
-    global evalagree
-    global evalphrase
-    if evalagree == False:
-        if (
-            input(
-                "The eval command is a dangerous command, it is literally just arbitrary code execution. By typing '"
-                + evalphrase
-                + "', you will be able to execute arbitrary code. This is dangerous and not recommended. "
-            )
-            == evalphrase
-        ):
-            evalagree = True
-    if evalagree:
+    if config['Main']['AllowACE'] == 'True':
         eval(x, globals(), globals())
 
 
@@ -522,19 +520,7 @@ def cmdeval(x):
 # turns out i was wrong. just needed to pass globals.
 @fuckit
 def cmdexec(x):
-    global evalagree
-    global evalphrase
-    if evalagree == False:
-        if (
-            input(
-                "The exec command is a dangerous command, it is literally just arbitrary code execution. By typing '"
-                + evalphrase
-                + "', you will be able to execute arbitrary code. This is dangerous and not recommended. "
-            )
-            == evalphrase
-        ):
-            evalagree = True
-    if evalagree:
+    if config["Main"]['AllowACE'] == 'True':
         exec(x, globals(), globals())
 
 
@@ -748,7 +734,6 @@ def edititem(x, id):
     v = len(jsondata["skeleton"]["items"])
     match x:
         case -1:
-            # exec('print(jsondata[\'skeleton\'][\'items\'][' + id + '])')
             viewitem(id, "*")
             z = input("Are you sure? y/n ").lower()
             if z == "y" or z == "yes":
@@ -823,10 +808,7 @@ def cmdCheck(cmdinput):
     # exit this bad program
     if cmd == "exit":
         # lol this doesnt work.
-        if rest == "":
-            cmdexit()
-        else:
-            cmdexit(rest)
+        cmdexit()
     # stuff that uses "rest"
     # save this important file.
     elif cmd == "save":
@@ -894,9 +876,10 @@ def cmdCheck(cmdinput):
 
 # prints different help, may make SETTINGS that will turn this off for people
 # used to the weird way of save editing via cli
-print(
-    "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]"
-)
+if config["Main"]['ShowHelp'] == 'True':
+    print(
+        "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]"
+    )
 
 
 def parseCmd(cmd):
