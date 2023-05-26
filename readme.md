@@ -21,17 +21,17 @@ notepad output.json
 https://user-images.githubusercontent.com/39711351/235377516-6963cf74-934e-4e8e-870a-0db6eeea0d47.mp4
 
 # requirements
+you need to install lzstring, fuckit, and numpy.
 
-you need to install lzstring and fuckit.
-<p>lzstring -> decompress save file and compress it</p>
+|package|arrow|reason|
+|-|-|-|
+|lzstring|->|decompress save file and compress it|
+|fuckit|->|make eval and exec not explode|
+|numpy|->|idk handle [x,...,y]
 
-<p>fuckit -> try/except didnt work for eval and exec so...yeah.</p>
+<p>here is code for you to run :) trust</p>
 
-<p>numpy -> idk handle [x,...,y]</p>
-
-<p>pyperclip -> not used in final thing but used for debugging. i left the code in because im lazy so until the "final" release is made itll be listed.</p>
-
-```
+```sh
 pip install lzstring
 pip install fuckit
 pip install numpy

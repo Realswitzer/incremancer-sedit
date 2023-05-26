@@ -23,9 +23,6 @@ import fuckit  # this is bad practice.
 import lzstring
 import numpy
 
-# SHIPPING: REMOVE THIS
-# import pyperclip
-
 print(
     "Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages."
 )
@@ -124,11 +121,8 @@ def cmdsave():
     # pretty much just open the files to write to
     file = open(outputfile, "w")
     tempfile = open("temp.tmp", "w")
-    # SHIPPING: remove pyperclip.
-    # pyperclip.copy(json.dumps(jsondata))
     # dump the data in a single line as it matters
     vvv = json.dumps(jsondata, separators=(",", ":"))
-    # pyperclip.copy(vvv)
     # write to the files, and close them
     tempfile.write(vvv)
     file.write(LZString.compressToEncodedURIComponent(vvv))
