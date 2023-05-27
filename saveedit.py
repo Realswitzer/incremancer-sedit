@@ -27,10 +27,12 @@ import numpy
 
 # use configparser to look at sedit.cfg
 config = configparser.ConfigParser()
-if not os.path.exists('sedit.cfg'):
-    open('sedit.cfg','w').write('[Main]\n;This is pretty much in an ini file format.\n;Should GPLv3 info show every run?\nShowGPL = True\n;Should "hii use !help..." show every run?\nShowHelp = True\n;Should /eval and /exec work?\nAllowACE = False\n;Currently does nothing\n;Is Chalice\'s mod used on the save? Ensures proper parsing.\nIsChalice = False')
-config.read('sedit.cfg')
-if config['Main']['ShowGPL'] == 'True':
+if not os.path.exists("sedit.cfg"):
+    open("sedit.cfg", "w").write(
+        '[Main]\n;This is pretty much in an ini file format.\n;Should GPLv3 info show every run?\nShowGPL = True\n;Should "hii use !help..." show every run?\nShowHelp = True\n;Should /eval and /exec work?\nAllowACE = False\n;Currently does nothing\n;Is Chalice\'s mod used on the save? Ensures proper parsing.\nIsChalice = False'
+    )
+config.read("sedit.cfg")
+if config["Main"]["ShowGPL"] == "True":
     print(
         "Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages."
     )
@@ -114,7 +116,7 @@ if str(cmdprefix) == "" or cmdprefix == [""]:
 def cmdexit():
     # save and exit, deleting temp.tmp. much more graceful than ctrl+c.
     # uh this doesnt work it literally just saves anyways. sorry.
-    if input("Save file? ").lower() in ['y', 'yes', 'ok', 'sure']:
+    if input("Save file? ").lower() in ["y", "yes", "ok", "sure"]:
         # just call the save command real quick
         cmdsave()
     # get rid of the temp file that doesn't have much point.
@@ -130,7 +132,7 @@ def cmdsave():
     vvv = json.dumps(jsondata, separators=(",", ":"))
     # pretty much just open the files to write to
     if not args.overwrite:
-        if input("File already exists. Overwrite? ").lower() in ['y','yes']:
+        if input("File already exists. Overwrite? ").lower() in ["y", "yes"]:
             file = open(outputfile, "w")
             file.write(LZString.compressToEncodedURIComponent(vvv))
             file.close()
@@ -144,8 +146,6 @@ def cmdsave():
         tempfile = open("temp.tmp", "w")
         tempfile.write(vvv)
         tempfile.close()
-    
-    
 
 
 # for upg/const: set min and max boundaries to make it better. or something.
@@ -463,7 +463,7 @@ def cmdhelp():
         "Edit upgrade values by name",
         "Edit constructions by name",
         "Loads preset file",
-        "Opens item editor menu", # while probably not an issue, unable to do /item 1 5 5 for example, viewing item #5 and exiting
+        "Opens item editor menu",  # while probably not an issue, unable to do /item 1 5 5 for example, viewing item #5 and exiting
         "Clears screen",
         "Arbitrary code execution - evaluate expressions",
         "Arbitrary code execution - execute code. but with exec()",
@@ -513,14 +513,14 @@ def cmdview(x):
 @fuckit  # ooh spooky bad practice
 # now just throw input in eval command. got it? good.
 def cmdeval(x):
-    if config['Main']['AllowACE'] == 'True':
+    if config["Main"]["AllowACE"] == "True":
         eval(x, globals(), globals())
 
 
 # wait this does basically the same thing but with exec.
 @fuckit
 def cmdexec(x):
-    if config["Main"]['AllowACE'] == 'True':
+    if config["Main"]["AllowACE"] == "True":
         exec(x, globals(), globals())
 
 
@@ -723,39 +723,40 @@ def viewitem(id, type):
         case _:
             print("nuh uh you did something wrong stupid dum dum")
 
+
 def genstat(stat, newItem=None):
     match stat:
-        case 's':
-            return random.randint(1,7)
-        case 'r':
-            choices = [1,2,3,4]
+        case "s":
+            return random.randint(1, 7)
+        case "r":
+            choices = [1, 2, 3, 4]
             # weights = [80,16,3.6,0.4] # no shiny level
-            weights = [60,24,12.8,3.2] # max shiny level
+            weights = [60, 24, 12.8, 3.2]  # max shiny level
             return random.choices(choices, weights=weights)[0]
-        case 'p':
+        case "p":
             if newItem == None:
                 return "genstat:nonewItem"
-            itemrarity = newItem['r']
+            itemrarity = newItem["r"]
             if itemrarity == 1:
-                return random.randint(1,11)
+                return random.randint(1, 11)
             elif itemrarity == 2:
-                return random.randint(1,9)
+                return random.randint(1, 9)
             elif itemrarity == 3:
-                return random.randint(1,8)
+                return random.randint(1, 8)
             elif itemrarity == 4:
-                return random.randint(1,5)
+                return random.randint(1, 5)
             else:
                 return "genstat:rarityError"
-        case 'e':
+        case "e":
             if newItem == None:
                 return "genstat:nonewItem"
-            k = newItem['r']
+            k = newItem["r"]
             if k > 4:
                 return "genstat:rarityError"
-            choices = [1,2,3,4,5]
-        case 'se':
-            if newItem['r'] == 4:
-                choices = [1,2,3,4,5,6,7,8]
+            choices = [1, 2, 3, 4, 5]
+        case "se":
+            if newItem["r"] == 4:
+                choices = [1, 2, 3, 4, 5, 6, 7, 8]
                 k = 1
             else:
                 return []
@@ -763,8 +764,9 @@ def genstat(stat, newItem=None):
             return "genstat:skillIssue"
     return list(random.sample(choices, k))
 
+
 def edititem(mode, id=None):
-    items = jsondata['skeleton']['items']
+    items = jsondata["skeleton"]["items"]
     match mode:
         case -1:
             if id == None:
@@ -782,14 +784,16 @@ def edititem(mode, id=None):
             # edit item code
         case 1:
             global newItem
-            newItem = {'id': int(items[len(items)-1]['id'])+1,
-                       'l': int(jsondata['skeleton']['level'])}
-            newItem['s'] = genstat('s')
-            newItem['r'] = genstat('r')
-            newItem['p'] = genstat('p',newItem)
-            newItem['e'] = genstat('e',newItem)
-            newItem['se'] = genstat('se',newItem)
-            newItem['q'] = False
+            newItem = {
+                "id": int(items[len(items) - 1]["id"]) + 1,
+                "l": int(jsondata["skeleton"]["level"]),
+            }
+            newItem["s"] = genstat("s")
+            newItem["r"] = genstat("r")
+            newItem["p"] = genstat("p", newItem)
+            newItem["e"] = genstat("e", newItem)
+            newItem["se"] = genstat("se", newItem)
+            newItem["q"] = False
             print(newItem)
             items.append(newItem)
         case _:
@@ -925,7 +929,7 @@ def cmdCheck(cmdinput):
 
 # prints different help, may make SETTINGS that will turn this off for people
 # used to the weird way of save editing via cli
-if config["Main"]['ShowHelp'] == 'True':
+if config["Main"]["ShowHelp"] == "True":
     print(
         "hii use !help (default) to see list of commands.\nto edit values, do '[key] = [value]'\nto edit nested values do '[key.nestkey] = [value]'\nto create a list of all numbers between x and y do [x,...,y]\nfor every fifth one do [x,...,y,5]"
     )
