@@ -19,6 +19,7 @@ import os
 import re
 import operator
 import configparser
+import random
 
 import fuckit  # this is bad practice.
 import lzstring
@@ -447,6 +448,7 @@ def cmdhelp():
         "upgrades",
         "constructions",
         "preset",
+        "items",
         "clear",
         "eval",
         "exec",
@@ -461,6 +463,7 @@ def cmdhelp():
         "Edit upgrade values by name",
         "Edit constructions by name",
         "Loads preset file",
+        "Opens item editor menu", # while probably not an issue, unable to do /item 1 5 5 for example, viewing item #5 and exiting
         "Clears screen",
         "Arbitrary code execution - evaluate expressions",
         "Arbitrary code execution - execute code. but with exec()",
@@ -515,9 +518,6 @@ def cmdeval(x):
 
 
 # wait this does basically the same thing but with exec.
-# now i know if you look at previous versions,
-# i had comments saying you couldn't set variables.
-# turns out i was wrong. just needed to pass globals.
 @fuckit
 def cmdexec(x):
     if config["Main"]['AllowACE'] == 'True':
@@ -541,6 +541,7 @@ def cmddedupe(x):
             zzzpart = str(zzzparts[inc])
         zzy = zzy + str([zzzpart])
         inc += 1
+    # you will NOT use exec multiple times in a row
     exec("zz = list(dict.fromkeys(jsondata" + zzy + "))", globals(), globals())
     exec("jsondata" + zzy + " = zz")
     print("Deduped " + str(zzy))
@@ -655,6 +656,8 @@ def viewitemdata(item, type, text):
                     "Gigazombies",
                     "Incinerate",
                     "Pandemic",
+                    "7 (??? might not exist)",
+                    "Part Storm",
                 ]
 
         if isinstance(lval, list):
@@ -678,15 +681,6 @@ def viewitemdata(item, type, text):
                 if val > len(vals):
                     val = str(val) + " (Illegal value?)"
             print(text, val)
-    # elif type == 'r': #this is literally copy and pasted from above, why am i doing it like this
-    #    incr = 0
-    #    rarity = int(item['r'])
-    #    rarities = ['Common','Rare','Epic','Legendary']
-    #    while incr < len(rarities):
-    #        if rarity == incr:
-    #            rarity = rarities[incr]
-    #        incr += 1
-    #    print(text,rarity)
     else:
         print(text, item[type])
 
@@ -729,18 +723,78 @@ def viewitem(id, type):
         case _:
             print("nuh uh you did something wrong stupid dum dum")
 
+def genstat(stat, newItem=None):
+    match stat:
+        case 's':
+            return random.randint(1,7)
+        case 'r':
+            choices = [1,2,3,4]
+            # weights = [80,16,3.6,0.4] # no shiny level
+            weights = [60,24,12.8,3.2] # max shiny level
+            return random.choices(choices, weights=weights)[0]
+        case 'p':
+            if newItem == None:
+                return "genstat:nonewItem"
+            itemrarity = newItem['r']
+            if itemrarity == 1:
+                return random.randint(1,11)
+            elif itemrarity == 2:
+                return random.randint(1,9)
+            elif itemrarity == 3:
+                return random.randint(1,8)
+            elif itemrarity == 4:
+                return random.randint(1,5)
+            else:
+                return "genstat:rarityError"
+        case 'e':
+            if newItem == None:
+                return "genstat:nonewItem"
+            k = newItem['r']
+            if k > 4:
+                return "genstat:rarityError"
+            choices = [1,2,3,4,5]
+        case 'se':
+            if newItem['r'] == 4:
+                choices = [1,2,3,4,5,6,7,8]
+                k = 1
+            else:
+                return []
+        case _:
+            return "genstat:skillIssue"
+    return list(random.sample(choices, k))
 
-def edititem(x, id):
-    v = len(jsondata["skeleton"]["items"])
-    match x:
+def edititem(mode, id=None):
+    items = jsondata['skeleton']['items']
+    match mode:
         case -1:
+            if id == None:
+                print("edititem(mode, id)\nid required")
+                return "maybe less skill issue"
             viewitem(id, "*")
             z = input("Are you sure? y/n ").lower()
             if z == "y" or z == "yes":
-                del jsondata["skeleton"]["items"][int(id) - 1]
+                del items[int(id) - 1]
                 print("Item deleted")
+        case 0:
+            if id == None:
+                print("edititem(mode, id)\nid required")
+                return "maybe less skill issue"
+            # edit item code
+        case 1:
+            global newItem
+            newItem = {'id': int(items[len(items)-1]['id'])+1,
+                       'l': int(jsondata['skeleton']['level'])}
+            newItem['s'] = genstat('s')
+            newItem['r'] = genstat('r')
+            newItem['p'] = genstat('p',newItem)
+            newItem['e'] = genstat('e',newItem)
+            newItem['se'] = genstat('se',newItem)
+            newItem['q'] = False
+            print(newItem)
+            items.append(newItem)
         case _:
-            print("not implemented")
+            print("edititem(mode, id)\nmode required")
+            return "skill issue"
 
 
 def cmditem(x):
@@ -767,12 +821,7 @@ def cmditem(x):
                 except IndexError:
                     print("Item does not exist")
             case "2":
-                try:
-                    edititem(1, input("Insert number: "))
-                except IndexError:
-                    print(
-                        "Item does not exist"
-                    )  # yeah this makes sense, it's creating an item out of thin air wtf was i doing
+                edititem(1)
             case "3":
                 try:
                     edititem(0, input("Insert number: "))

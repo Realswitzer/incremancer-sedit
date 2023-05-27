@@ -1,4 +1,4 @@
-- add editing support for items (need further reverse engineering to figure out what the hell im doing)
+- add editing support for items (besides just deleting)
 - possibly add +=, -=, = opts
   get -= working with lists. cant find any methods.
 - suggest similar named keys (i.e. typing bonws will suggest bones)
@@ -20,3 +20,4 @@
 - maybe edit by id
 - make it conform to pep8 i guess.
 - remake /:3
+- add support for chalice12's mod. probably going to be a while.
