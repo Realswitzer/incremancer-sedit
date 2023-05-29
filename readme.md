@@ -32,9 +32,7 @@ you need to install lzstring, fuckit, and numpy.
 <p>here is code for you to run :) trust</p>
 
 ```sh
-pip install lzstring
-pip install fuckit
-pip install numpy
+pip install lzstring fuckit numpy
 ```
 
 ### idk what to name this section

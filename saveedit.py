@@ -685,7 +685,7 @@ def viewitemdata(item, type, text):
         print(text, item[type])
 
 
-def viewitem(id:int, type:str):
+def viewitem(id: int, type: str):
     item = jsondata["skeleton"]["items"][int(id) - 1]
     match type:
         case "*" | "all" | "full":  # all
@@ -765,7 +765,7 @@ def genstat(stat, newItem=None):
     return list(random.sample(choices, k))
 
 
-def edititem(mode:int, id=None):
+def edititem(mode: int, id=None):
     items = jsondata["skeleton"]["items"]
     match mode:
         case -1:
@@ -785,37 +785,43 @@ def edititem(mode:int, id=None):
             if id == None:
                 print("edititem(mode, id)\nid required")
                 return "maybe less skill issue"
-            viewitem(int(id),'all')
-            stopNamingYourStupidInputsLikeThis = input('1: Regenerate statistic | 2: Edit statistic > ')
-            statisticToEdit = input('What statistic would you like to modify?\n1: ID | 2: Level | 3: Type | 4: Rarity | 5: Prefix | 6: Effects | 7: Special Effects\n >> ')
+            viewitem(int(id), "all")
+            stopNamingYourStupidInputsLikeThis = input(
+                "1: Regenerate statistic | 2: Edit statistic > "
+            )
+            statisticToEdit = input(
+                "What statistic would you like to modify?\n1: ID | 2: Level | 3: Type | 4: Rarity | 5: Prefix | 6: Effects | 7: Special Effects\n >> "
+            )
             match statisticToEdit:
-                case '1':
-                    statisticToEdit = 'id'
-                case '2':
-                    statisticToEdit = 'l'
-                case '3':
-                    statisticToEdit = 's'
-                case '4':
-                    statisticToEdit = 'r'
-                case '5':
-                    statisticToEdit = 'p'
-                case '6':
-                    statisticToEdit = 'e'
-                case '7':
-                    statisticToEdit = 'se'
+                case "1":
+                    statisticToEdit = "id"
+                case "2":
+                    statisticToEdit = "l"
+                case "3":
+                    statisticToEdit = "s"
+                case "4":
+                    statisticToEdit = "r"
+                case "5":
+                    statisticToEdit = "p"
+                case "6":
+                    statisticToEdit = "e"
+                case "7":
+                    statisticToEdit = "se"
                 case _:
                     print("Invalid value")
-                    return 'doesn\'t even exist'
-            preMod = items[int(id)-1][statisticToEdit]
-            if stopNamingYourStupidInputsLikeThis == '1':
-                items[int(id)-1][statisticToEdit] = genstat(statisticToEdit, items[int(id)-1]) #genstat was not made for existing items. bad workaround.
-            elif stopNamingYourStupidInputsLikeThis == '2':
+                    return "doesn't even exist"
+            preMod = items[int(id) - 1][statisticToEdit]
+            if stopNamingYourStupidInputsLikeThis == "1":
+                items[int(id) - 1][statisticToEdit] = genstat(
+                    statisticToEdit, items[int(id) - 1]
+                )  # genstat was not made for existing items. bad workaround.
+            elif stopNamingYourStupidInputsLikeThis == "2":
                 print("this does not work.")
                 pass
-                #fix later but not adding this for now. too much work
+                # fix later but not adding this for now. too much work
             else:
-                return 'skill issue'
-            print(preMod,'->',items[int(id)-1][statisticToEdit])
+                return "skill issue"
+            print(preMod, "->", items[int(id) - 1][statisticToEdit])
         case 1:
             # uh i guess later have it prompt how many to generate and for each run below code.
             t = input("How many items do you want to generate? ")
@@ -834,7 +840,7 @@ def edititem(mode:int, id=None):
                 newItem["q"] = False
                 print(newItem)
                 items.append(newItem)
-                inc+=1
+                inc += 1
         case _:
             print("edititem(mode, id)\nmode required")
             return "skill issue"
