@@ -685,7 +685,7 @@ def viewitemdata(item, type, text):
         print(text, item[type])
 
 
-def viewitem(id, type):
+def viewitem(id:int, type:str):
     item = jsondata["skeleton"]["items"][int(id) - 1]
     match type:
         case "*" | "all" | "full":  # all
@@ -765,14 +765,18 @@ def genstat(stat, newItem=None):
     return list(random.sample(choices, k))
 
 
-def edititem(mode, id=None):
+def edititem(mode:int, id=None):
     items = jsondata["skeleton"]["items"]
     match mode:
         case -1:
             if id == None:
                 print("edititem(mode, id)\nid required")
                 return "maybe less skill issue"
-            viewitem(id, "*")
+            try:
+                viewitem(int(id), "*")
+            except:
+                print("input not int")
+                return "no"
             z = input("Are you sure? y/n ").lower()
             if z == "y" or z == "yes":
                 del items[int(id) - 1]
@@ -781,21 +785,56 @@ def edititem(mode, id=None):
             if id == None:
                 print("edititem(mode, id)\nid required")
                 return "maybe less skill issue"
-            # edit item code
+            viewitem(int(id),'all')
+            stopNamingYourStupidInputsLikeThis = input('1: Regenerate statistic | 2: Edit statistic > ')
+            statisticToEdit = input('What statistic would you like to modify?\n1: ID | 2: Level | 3: Type | 4: Rarity | 5: Prefix | 6: Effects | 7: Special Effects\n >> ')
+            match statisticToEdit:
+                case '1':
+                    statisticToEdit = 'id'
+                case '2':
+                    statisticToEdit = 'l'
+                case '3':
+                    statisticToEdit = 's'
+                case '4':
+                    statisticToEdit = 'r'
+                case '5':
+                    statisticToEdit = 'p'
+                case '6':
+                    statisticToEdit = 'e'
+                case '7':
+                    statisticToEdit = 'se'
+                case _:
+                    print("Invalid value")
+                    return 'doesn\'t even exist'
+            preMod = items[int(id)-1][statisticToEdit]
+            if stopNamingYourStupidInputsLikeThis == '1':
+                items[int(id)-1][statisticToEdit] = genstat(statisticToEdit, items[int(id)-1]) #genstat was not made for existing items. bad workaround.
+            elif stopNamingYourStupidInputsLikeThis == '2':
+                print("this does not work.")
+                pass
+                #fix later but not adding this for now. too much work
+            else:
+                return 'skill issue'
+            print(preMod,'->',items[int(id)-1][statisticToEdit])
         case 1:
+            # uh i guess later have it prompt how many to generate and for each run below code.
+            t = input("How many items do you want to generate? ")
             global newItem
-            newItem = {
-                "id": int(items[len(items) - 1]["id"]) + 1,
-                "l": int(jsondata["skeleton"]["level"]),
-            }
-            newItem["s"] = genstat("s")
-            newItem["r"] = genstat("r")
-            newItem["p"] = genstat("p", newItem)
-            newItem["e"] = genstat("e", newItem)
-            newItem["se"] = genstat("se", newItem)
-            newItem["q"] = False
-            print(newItem)
-            items.append(newItem)
+            inc = 0
+            while inc < int(t):
+                newItem = {
+                    "id": int(items[len(items) - 1]["id"]) + 1,
+                    "l": int(jsondata["skeleton"]["level"]),
+                }
+                newItem["s"] = genstat("s")
+                newItem["r"] = genstat("r")
+                newItem["p"] = genstat("p", newItem)
+                newItem["e"] = genstat("e", newItem)
+                newItem["se"] = genstat("se", newItem)
+                newItem["q"] = False
+                print(newItem)
+                items.append(newItem)
+                inc+=1
         case _:
             print("edititem(mode, id)\nmode required")
             return "skill issue"
@@ -807,7 +846,7 @@ def cmditem(x):
     # if x == '':
     x = str(x)  # stop editor from complaining
     while True:
-        finput = "\nItem Menu ({items} items):\n1: View Item | 2: Create Item | 3: Edit Item | 4: Delete Item | 5/q: Exit item editing menu\n".format(
+        finput = "\nItem Menu ({items} items):\n1: View Item | 2: Create Item | 3: Edit Item | 4: Delete Item | 5/q: Exit item editing menu\n >> ".format(
             items=len(jsondata["skeleton"]["items"])
         )
         v = input(finput)
