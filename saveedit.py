@@ -20,6 +20,7 @@ import re
 import operator
 import configparser
 import random
+import ast
 
 import fuckit  # this is bad practice.
 import lzstring
@@ -123,29 +124,33 @@ def cmdexit():
     os.remove("temp.tmp")
     exit()
 
-
-def cmdsave():
-    # the actual save part
-    # now jsondata needs to be accessible in this function
+def actuallySave():
     global jsondata
-    # dump the data in a single line as it matters
     vvv = json.dumps(jsondata, separators=(",", ":"))
-    # pretty much just open the files to write to
-    if not args.overwrite:
-        if input("File already exists. Overwrite? ").lower() in ["y", "yes"]:
-            file = open(outputfile, "w")
-            file.write(LZString.compressToEncodedURIComponent(vvv))
-            file.close()
-            tempfile = open("temp.tmp", "w")
-            tempfile.write(vvv)
-            tempfile.close()
-    else:
-        file = open(outputfile, "w")
+    file = open(outputfile, "w")
+    # determine what format to save as based on outputfile name
+    if os.path.splitext(outputfile)[1] == '.sav':
         file.write(LZString.compressToEncodedURIComponent(vvv))
-        file.close()
-        tempfile = open("temp.tmp", "w")
-        tempfile.write(vvv)
-        tempfile.close()
+    elif os.path.splitext(outputfile)[1] == '.json':
+        file.write(vvv)
+    else:
+        print("outputfile extension not .sav or .json, saving as .sav")
+        # because i dont think people would really want the json, just use dump.py tbh
+        file.write(LZString.compressToEncodedURIComponent(vvv))
+    file.close()
+    tempfile = open("temp.tmp", "w")
+    tempfile.write(vvv)
+    tempfile.close()
+    print("Saved")
+def cmdsave():
+    if not args.overwrite:
+        if os.path.exists(outputfile):
+            if input("File already exists. Overwrite? ").lower() in ["y", "yes"]:
+                actuallySave()
+        else:
+            actuallySave()
+    else:
+        actuallySave()
 
 
 # for upg/const: set min and max boundaries to make it better. or something.
@@ -816,8 +821,12 @@ def edititem(mode: int, id=None):
                     statisticToEdit, items[int(id) - 1]
                 )  # genstat was not made for existing items. bad workaround.
             elif stopNamingYourStupidInputsLikeThis == "2":
-                print("this does not work.")
-                pass
+                print("requires prior knowledge about game format, refer to ./id\nplease bully me on github issues to make this more user friendly")
+                newVal = input("Insert new value: ")
+                if newVal[:1] == '[' and newVal[-1:] == ']':
+                    items[int(id) - 1][statisticToEdit] = ast.literal_eval(newVal)
+                else:
+                    items[int(id) - 1][statisticToEdit] = int(newVal)
                 # fix later but not adding this for now. too much work
             else:
                 return "skill issue"

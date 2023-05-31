@@ -12,7 +12,7 @@
 import os
 
 print("Hi, I feel under GPLv3 licensing, I should put this here.\nThis program does not have any warranty, no implied warranty, and I am legally not held responsible for any damages.")
-protected_dirs = [".git", ".venv", ".vscode", "presets", "chalice"]
+protected_dirs = [".git", ".venv", ".vscode", "presets", "chalice", "savs", "saves"] #savs is in case user stores saves there
 protected_files = [
     ".gitignore",
     "clean.py",
